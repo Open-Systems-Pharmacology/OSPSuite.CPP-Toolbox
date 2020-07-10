@@ -15,6 +15,7 @@ include_directories (
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../SuiteSparse/COLAMD/include
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../SuiteSparse/KLU/include
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../SuiteSparse/SuiteSparse_config
+	${OSPSuite.CPPToolbox_SOURCE_DIR}/../../BuildSundials/${CMAKE_BUILD_TYPE}/x64/include
 )
 
 file (GLOB SOURCES 
