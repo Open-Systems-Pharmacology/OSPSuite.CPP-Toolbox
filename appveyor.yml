@@ -30,6 +30,11 @@ cache:
 before_build:
   - git submodule update --init --recursive
 
+install:
+  #linux: install libxml2
+  - sh: sudo apt-get update --assume-yes 
+  - sh: sudo apt-get install libxml2-dev --assume-yes 
+
 #after_build:
 #  - cmd: nuget pack src\OSPSuite.SimModel\OSPSuite.SimModel.nuspec -version %app_version%
 #  - sh: nuget pack src/OSPSuite.SimModel/OSPSuite.SimModel.Ubuntu18.nuspec -version $app_version
