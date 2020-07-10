@@ -10,11 +10,7 @@ include_directories (
     ${OSPSuite.CPPToolbox_SOURCE_DIR}/include 
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../Sundials/include
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../../lib/Matlab2017b_Linux/extern/include
-	${OSPSuite.CPPToolbox_SOURCE_DIR}/../SuiteSparse/AMD/include
-	${OSPSuite.CPPToolbox_SOURCE_DIR}/../SuiteSparse/BTF/include
-	${OSPSuite.CPPToolbox_SOURCE_DIR}/../SuiteSparse/COLAMD/include
-	${OSPSuite.CPPToolbox_SOURCE_DIR}/../SuiteSparse/KLU/include
-	${OSPSuite.CPPToolbox_SOURCE_DIR}/../SuiteSparse/SuiteSparse_config
+	${OSPSuite.CPPToolbox_SOURCE_DIR}/../SuiteSparse/include
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../../BuildSundials/${CMAKE_BUILD_TYPE}/x64/include
 )
 
