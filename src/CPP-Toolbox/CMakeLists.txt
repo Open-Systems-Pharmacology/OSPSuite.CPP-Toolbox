@@ -6,8 +6,6 @@ set (CMAKE_CXX_FLAGS_DEBUG "-g")
 set (CMAKE_CXX_FLAGS_RELEASE "-O3")
 set (CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-find_package(LibXml2 REQUIRED)
-
 include_directories (
     ${OSPSuite.CPPToolbox_SOURCE_DIR}/include 
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../Sundials/include

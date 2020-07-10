@@ -3,7 +3,7 @@
 #call: buildLinux.sh distributionName version
 # e.g. buildLinux.sh CentOS7 4.0.0.49
 
-git submodule update --init --recursive
+#git submodule update --init --recursive
 
 cd src/SuiteSparse/
 #make clean
