@@ -24,10 +24,10 @@
     <file src="..\OSPSuite.CPP-Toolbox\*.*" target="OSPSuite.CPP-Toolbox" exclude="..\OSPSuite.CPP-Toolbox\*.vcxproj*" />
 
     <file src="..\SuiteSparse\include\**\*.h" target="SuiteSparse\include" />
-    <file src="..\SuiteSparse\AMD\include\**\*.h" target="SuiteSparse\include\AMD" />
-    <file src="..\SuiteSparse\BTF\include\**\*.h" target="SuiteSparse\include\BTF" />
-    <file src="..\SuiteSparse\COLAMD\include\**\*.h" target="SuiteSparse\include\COLAMD" />
-    <file src="..\SuiteSparse\KLU\include\**\*.h" target="SuiteSparse\include\KLU" />
+    <file src="..\SuiteSparse\AMD\Include\**\*.h" target="SuiteSparse\include\AMD" />
+    <file src="..\SuiteSparse\BTF\Include\**\*.h" target="SuiteSparse\include\BTF" />
+    <file src="..\SuiteSparse\COLAMD\Include\**\*.h" target="SuiteSparse\include\COLAMD" />
+    <file src="..\SuiteSparse\KLU\Include\**\*.h" target="SuiteSparse\include\KLU" />
     <file src="..\SuiteSparse\SuiteSparse_config\**\*.h" target="SuiteSparse\include\SuiteSparse_config" />
 
     <file src="..\SuiteSparse\AMD\Lib\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
