@@ -18,9 +18,9 @@ file (GLOB SOURCES
         ${OSPSuite.CPPToolbox_SOURCE_DIR}/src/*.cpp
 )
 
-add_library (OSPSuite.CPPToolbox SHARED ${SOURCES})
+add_library (OSPSuite.CPP-Toolbox SHARED ${SOURCES})
 
-target_link_libraries (OSPSuite.CPPToolbox 
+target_link_libraries (OSPSuite.CPP-Toolbox 
     ${OSPSuite.CPPToolbox_SOURCE_DIR}/../../lib/Matlab2017b_Linux/bin/glnxa64/libmat.so
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../../lib/Matlab2017b_Linux/bin/glnxa64/libmex.so
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../../lib/Matlab2017b_Linux/bin/glnxa64/libmx.so
