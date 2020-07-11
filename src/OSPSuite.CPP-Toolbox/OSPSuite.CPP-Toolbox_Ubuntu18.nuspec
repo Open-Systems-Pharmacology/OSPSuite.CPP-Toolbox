@@ -18,6 +18,9 @@
     <file src="..\..\Build\Release\x64\libOSPSuite.CPP-Toolbox.so" target="OSPSuite.CPP-Toolbox\bin\native\x64\Release" />
     <file src="..\..\Build\Release\x64\libOSPSuite.CPP-Toolbox.mexa64" target="OSPSuite.CPP-Toolbox\bin\native\x64\Release" />
 
+    <file src="..\..\Build\Debug\x64\libOSPSuite.CPP-Toolbox.so" target="OSPSuite.CPP-Toolbox\bin\native\x64\Debug" />
+    <file src="..\..\Build\Debug\x64\libOSPSuite.CPP-Toolbox.mexa64" target="OSPSuite.CPP-Toolbox\bin\native\x64\Debug" />
+
 
     <file src="..\OSPSuite.CPP-Toolbox\include\**\*.h" target="OSPSuite.CPP-Toolbox\include" />
     <file src="..\OSPSuite.CPP-Toolbox\src\**\*.*" target="OSPSuite.CPP-Toolbox\src" />
@@ -42,6 +45,7 @@
 	<file src="..\..\BuildSundials\Release\x64\include\sundials\*.h" target="Sundials\include\sundials" />
 
 	<file src="..\..\BuildSundials\Release\x64\src\**\*.a" target="Sundials\bin\native\x64\Release" />
+	<file src="..\..\BuildSundials\Debug\x64\src\**\*.a" target="Sundials\bin\native\x64\Debug" />
 
   </files>
 </package>
