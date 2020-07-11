@@ -7,13 +7,12 @@
 
 cd src/SuiteSparse/
 #make clean
-#make static
 make library
 cd ../..
+
 cmake -BBuildSundials/Release/x64/ -Hsrc/Sundials/ -DCMAKE_BUILD_TYPE=Release -DEXAMPLES_ENABLE_C=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DKLU_ENABLE=ON -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DKLU_INCLUDE_DIR=src/SuiteSparse/include -DKLU_LIBRARY_DIR=src/SuiteSparse/lib
-#cmake -BBuildSundials/Release/x64/ -Hsrc/Sundials/ -DCMAKE_BUILD_TYPE=Release -DEXAMPLES_ENABLE_C=OFF -DBUILD_SHARED_LIBS=OFF -DBUILD_STATIC_LIBS=ON -DKLU_ENABLE=ON -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DKLU_INCLUDE_DIR=src/SuiteSparse/include -DKLU_LIBRARY_DIR=src/SuiteSparse/KLU/Lib
 make -C BuildSundials/Release/x64/
-cmake -BBuild/Release/x64/ -Hsrc/CPP-Toolbox -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+cmake -BBuild/Release/x64/ -Hsrc/OSPSuite.CPP-Toolbox -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 make -C Build/Release/x64/
 
 
