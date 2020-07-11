@@ -25,7 +25,6 @@ target_link_libraries (OSPSuite.CPP-Toolbox
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../../lib/Matlab2017b_Linux/bin/glnxa64/libmex.so
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../../lib/Matlab2017b_Linux/bin/glnxa64/libmx.so
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../../lib/Matlab2017b_Linux/runtime/glnxa64/libmwmclmcrrt.so
-	${OSPSuite.CPPToolbox_SOURCE_DIR}/../../lib/Matlab2017b_Linux/runtime/glnxa64/libmwmclmcrrt.so
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../../BuildSundials/${CMAKE_BUILD_TYPE}/x64/src/arkode/libsundials_arkode.a
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../../BuildSundials/${CMAKE_BUILD_TYPE}/x64/src/cvode/libsundials_cvode.a
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../../BuildSundials/${CMAKE_BUILD_TYPE}/x64/src/cvodes/libsundials_cvodes.a

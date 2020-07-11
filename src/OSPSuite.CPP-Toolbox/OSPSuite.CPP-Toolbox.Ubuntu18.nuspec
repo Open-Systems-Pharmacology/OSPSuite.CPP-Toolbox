@@ -16,24 +16,32 @@
   </metadata>
   <files>
     <file src="..\..\Build\Release\x64\libOSPSuite.CPP-Toolbox.so" target="OSPSuite.CPP-Toolbox\bin\native\x64\Release" />
-    <file src="..\..\Build\Release\x64\libOSPSuite.CPP-Toolbox.so" target="OSPSuite.CPP-Toolbox\bin\native\x64\Release\libOSPSuite.CPP-Toolbox.mexa64" />
+    <file src="..\..\Build\Release\x64\libOSPSuite.CPP-Toolbox.mexa64" target="OSPSuite.CPP-Toolbox\bin\native\x64\Release" />
 
 
     <file src="..\OSPSuite.CPP-Toolbox\include\**\*.h" target="OSPSuite.CPP-Toolbox\include" />
     <file src="..\OSPSuite.CPP-Toolbox\src\**\*.*" target="OSPSuite.CPP-Toolbox\src" />
     <file src="..\OSPSuite.CPP-Toolbox\*.*" target="OSPSuite.CPP-Toolbox" exclude="..\OSPSuite.CPP-Toolbox\*.vcxproj*" />
 
-    <file src="..\OSPSuite.SimModelSolverBase\src\OSPSuite.SimModelSolverBase\include\**\*.h" target="OSPSuite.SimModelSolverBase\include" />
-    <file src="..\OSPSuite.SimModelSolverBase\src\OSPSuite.SimModelSolverBase\src\**\*.*" target="OSPSuite.SimModelSolverBase\src" />
-    <file src="..\OSPSuite.SimModelSolverBase\src\OSPSuite.SimModelSolverBase\*.*" target="OSPSuite.SimModelSolverBase" exclude="..\OSPSuite.SimModelSolverBase\*.vcxproj*" />
+    <file src="..\SuiteSparse\include\**\*.h" target="SuiteSparse\include" />
+    <file src="..\SuiteSparse\AMD\include\**\*.h" target="SuiteSparse\include\AMD" />
+    <file src="..\SuiteSparse\BTF\include\**\*.h" target="SuiteSparse\include\BTF" />
+    <file src="..\SuiteSparse\COLAMD\include\**\*.h" target="SuiteSparse\include\COLAMD" />
+    <file src="..\SuiteSparse\KLU\include\**\*.h" target="SuiteSparse\include\KLU" />
+    <file src="..\SuiteSparse\SuiteSparse_config\**\*.h" target="SuiteSparse\include\SuiteSparse_config" />
 
-    <file src="..\OSPSuite.SysTool\include\**\*.h" target="OSPSuite.SysTool\include" />
-    <file src="..\OSPSuite.SysTool\src\**\*.*" target="OSPSuite.SysTool\src" />
-    <file src="..\OSPSuite.SysTool\*.*" target="OSPSuite.SysTool" exclude="..\OSPSuite.SysTool\*.vcxproj*" />
+    <file src="..\SuiteSparse\AMD\Lib\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
+    <file src="..\SuiteSparse\BTF\Lib\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
+    <file src="..\SuiteSparse\COLAMD\Lib\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
+    <file src="..\SuiteSparse\KLU\Lib\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
+    <file src="..\SuiteSparse\SuiteSparse_config\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
 
-    <file src="..\OSPSuite.XMLWrapper\include\**\*.h" target="OSPSuite.XMLWrapper\include" />
-    <file src="..\OSPSuite.XMLWrapper\src\**\*.*" target="OSPSuite.XMLWrapper\src" />
-    <file src="..\OSPSuite.XMLWrapper\*.*" target="OSPSuite.XMLWrapper" exclude="..\OSPSuite.SysTool\*.vcxproj*" />
+    <file src="..\SuiteSparse\lib\*.so" target="SuiteSparse\bin\native\x64\Release\shared" />
+	
+	<file src="..\Sundials\include\**\*.h" target="Sundials\include" />
+	<file src="..\..\BuildSundials\Release\x64\include\sundials\*.h" target="Sundials\include\sundials" />
+
+	<file src="..\..\BuildSundials\Release\x64\src\**\*.a" target="Sundials\bin\native\x64\Release" />
 
   </files>
 </package>
