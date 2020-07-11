@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>    
+    <description>Calculation engine for models built with PK-Sim® or MoBi®</description>
+    <id>OSPSuite.CPP-Toolbox.Ubuntu18</id>
+    <version>$version$</version>
+    <title>OSPSuite.CPP-Toolbox</title>
+    <authors>Open-Systems-Pharmacology</authors>
+    <owners>Open-Systems-Pharmacology</owners>
+    <projectUrl>https://github.com/Open-Systems-Pharmacology/OSPSuite.CPP-Toolbox</projectUrl>
+    <licenseUrl>https://github.com/Open-Systems-Pharmacology/OSPSuite.CPP-Toolbox/blob/master/LICENSE</licenseUrl>
+    <iconUrl>https://raw.githubusercontent.com/Open-Systems-Pharmacology/Suite/master/logo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <copyright>Copyright © 2020 - Open Systems Pharmacology Community</copyright>
+    <tags>open-systems-pharmacology</tags>
+  </metadata>
+  <files>
+    <file src="..\..\Build\Release\x64\libOSPSuite.CPP-Toolbox.so" target="OSPSuite.CPP-Toolbox\bin\native\x64\Release" />
+    <file src="..\..\Build\Release\x64\libOSPSuite.CPP-Toolbox.mexa64" target="OSPSuite.CPP-Toolbox\bin\native\x64\Release" />
+
+
+    <file src="..\OSPSuite.CPP-Toolbox\include\**\*.h" target="OSPSuite.CPP-Toolbox\include" />
+    <file src="..\OSPSuite.CPP-Toolbox\src\**\*.*" target="OSPSuite.CPP-Toolbox\src" />
+    <file src="..\OSPSuite.CPP-Toolbox\*.*" target="OSPSuite.CPP-Toolbox" exclude="..\OSPSuite.CPP-Toolbox\*.vcxproj*" />
+
+    <file src="..\SuiteSparse\include\**\*.h" target="SuiteSparse\include" />
+    <file src="..\SuiteSparse\AMD\Include\**\*.h" target="SuiteSparse\include\AMD" />
+    <file src="..\SuiteSparse\BTF\Include\**\*.h" target="SuiteSparse\include\BTF" />
+    <file src="..\SuiteSparse\COLAMD\Include\**\*.h" target="SuiteSparse\include\COLAMD" />
+    <file src="..\SuiteSparse\KLU\Include\**\*.h" target="SuiteSparse\include\KLU" />
+    <file src="..\SuiteSparse\SuiteSparse_config\**\*.h" target="SuiteSparse\include\SuiteSparse_config" />
+
+    <file src="..\SuiteSparse\AMD\Lib\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
+    <file src="..\SuiteSparse\BTF\Lib\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
+    <file src="..\SuiteSparse\COLAMD\Lib\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
+    <file src="..\SuiteSparse\KLU\Lib\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
+    <file src="..\SuiteSparse\SuiteSparse_config\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
+
+    <file src="..\SuiteSparse\lib\*.so" target="SuiteSparse\bin\native\x64\Release\shared" />
+	
+	<file src="..\Sundials\include\**\*.h" target="Sundials\include" />
+	<file src="..\..\BuildSundials\Release\x64\include\sundials\*.h" target="Sundials\include\sundials" />
+
+	<file src="..\..\BuildSundials\Release\x64\src\**\*.a" target="Sundials\bin\native\x64\Release" />
+
+  </files>
+</package>
