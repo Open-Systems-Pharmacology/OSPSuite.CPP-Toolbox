@@ -4,10 +4,7 @@ image:
 environment:
   major: 1
   minor: 0
-  release: 0
-  app_version: '$(major).$(minor).$(release).$(APPVEYOR_BUILD_NUMBER)'
-
-version: '$(major).$(minor).$(release).{build}'
+  app_version: '$(major).$(minor).$(APPVEYOR_BUILD_NUMBER)'
 
 dotnet_csproj:
   patch: true
@@ -26,9 +23,22 @@ cache:
 before_build:
   - git submodule update --init --recursive
 
+branches:
+  only:
+    - master
+
+pull_requests:
+  do_not_increment_build_number: true
+
+skip_tags: true
+
+skip_commits:
+  files:
+    - "*.md"
+
 after_build:
-#  - cmd: nuget pack src\OSPSuite.SimModel\OSPSuite.SimModel.nuspec -version %app_version%
-#  - sh: nuget pack src/OSPSuite.SimModel/OSPSuite.SimModel.Ubuntu18.nuspec -version $app_version
+#  - cmd: nuget pack src\OSPSuite.CPP-Toolbox\OSPSuite.CPP-Toolbox.nuspec -version %app_version%
+#  - sh: nuget pack src/OSPSuite.CPP-Toolbox/OSPSuite.CPP-Toolbox_Ubuntu18.nuspec -version $app_version
   - ps: Get-ChildItem .\OSPSuite.CPP-Toolbox*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
 
 
