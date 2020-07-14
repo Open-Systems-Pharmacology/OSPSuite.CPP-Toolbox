@@ -34,7 +34,7 @@ __asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
 //#define PARALLEL
 //#define DER_CPPAD
 #define DER_DENSE
-#define DER_KLU
+//#define DER_KLU
 //#define DER_SUPERLU
 
 #if __cplusplus < 201103L
