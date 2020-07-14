@@ -5,7 +5,8 @@ set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_FLAGS_DEBUG "-g")
 set (CMAKE_CXX_FLAGS_RELEASE "-O3")
 set (CMAKE_POSITION_INDEPENDENT_CODE ON)
-set (CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++ -Wl,-Bdynamic") #cppToolbox 12
+set (CMAKE_SHARED_LINKER_FLAGS "-static-libstdc++ -Wl,-Bdynamic") #cppToolbox 15
+#set (CMAKE_SHARED_LINKER_FLAGS "-static-libgcc -static-libstdc++ -Wl,-Bdynamic") #cppToolbox 12
 #set (CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bdynamic") #cppToolbox 11
 #set (CMAKE_SHARED_LINKER_FLAGS "-lrt -lm -ldl -static-libgcc -static-libstdc++ -Wl,-Bdynamic") #cppToolbox 10
 #set (CMAKE_SHARED_LINKER_FLAGS "-lrt -lm -ldl -static-libgcc -static-libstdc++ -Wl,-Bdynamic")
@@ -27,10 +28,8 @@ file (GLOB SOURCES
 add_library (cppToolbox SHARED ${SOURCES})
 
 target_link_libraries (cppToolbox 
-	dl
-	rt
-	m
-	pthread
+	dl rt m pthread
+	c gcc_s gcc 
     ${OSPSuite.CPPToolbox_SOURCE_DIR}/../../lib/Matlab2017b_Linux/bin/glnxa64/libmat.so
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../../lib/Matlab2017b_Linux/bin/glnxa64/libmex.so
 	${OSPSuite.CPPToolbox_SOURCE_DIR}/../../lib/Matlab2017b_Linux/bin/glnxa64/libmx.so
