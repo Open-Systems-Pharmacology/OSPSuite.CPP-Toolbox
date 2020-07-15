@@ -23,24 +23,16 @@ if (debug == 0)
 
     scalar = sparse (pi) ;
 
-    % tic/toc includes the mexFunction overhead of making a deep copy
-    % of the input matrix.  MATLAB can modify C in place, as can GraphBLAS,
-    % but GraphBLAS cannot safely do that through a mexFunction interface
-    % to MATLAB.
-
     fprintf ('start GraphBLAS:\n') ;
     tic 
     C2 = GB_mex_subassign (A, [], [], scalar, I0, J0, []) ;
     toc
-    t = gbresults
 
     C = A ; 
     fprintf ('start MATLAB:\n') ;
     tic 
     C (I,J) = scalar ;
-    tm = toc
-
-    fprintf ('GraphBLAS speedup over MATLAB: %g\n',  tm/t) ;
+    toc
 
     assert (isequal (C, C2.matrix)) ;
     fprintf ('\ntest30: all tests passed\n') ;

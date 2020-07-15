@@ -9,8 +9,6 @@
 
 #include "GB_mex.h"
 
-#define USAGE "[I,J,K] = qsort (I,J,K)"
-
 void mexFunction
 (
     int nargout,
@@ -19,12 +17,9 @@ void mexFunction
     const mxArray *pargin [ ]
 )
 {
-
-    // check inputs
-    GB_WHERE (USAGE) ;
     if (nargin != 3 || nargout != 3)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: [I,J,K] = qsort (I,J,K)") ;
     }
     if (!mxIsClass (pargin [0], "int64"))
     {
@@ -66,11 +61,6 @@ void mexFunction
     int64_t *Kout = mxGetData (pargout [2]) ;
     memcpy (Kout, K, n * sizeof (int64_t)) ;
 
-    TIC ;
-
     GB_qsort_3 (Iout, Jout, Kout, n) ;
-
-    TOC ;
-    GB_mx_put_time (0) ;
 }
 

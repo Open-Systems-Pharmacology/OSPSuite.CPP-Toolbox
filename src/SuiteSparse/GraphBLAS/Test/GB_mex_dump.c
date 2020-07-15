@@ -7,16 +7,14 @@
 
 //------------------------------------------------------------------------------
 
-#include "GB_mex.h"
-
-#define USAGE "C = GB_mex_dump (A,pr)"
-
 #define FREE_ALL                        \
 {                                       \
     GB_MATRIX_FREE (&A) ;               \
     Complex_finalize ( ) ;              \
-    GB_mx_put_global (false, 0) ;       \
+    GB_mx_put_global (malloc_debug) ;   \
 }
+
+#include "GB_mex.h"
 
 void mexFunction
 (
@@ -27,18 +25,17 @@ void mexFunction
 )
 {
 
-    bool malloc_debug = GB_mx_get_global (false) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Matrix A = NULL ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargout > 1 || nargin < 1 || nargin > 2)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: C = GB_mex_dump (A,pr)") ;
     }
 
     // get A (deep copy)
-    A = GB_mx_mxArray_to_Matrix (pargin [0], "A input", true, true) ;
+    A = GB_mx_mxArray_to_Matrix (pargin [0], "A input", true) ;
     if (A == NULL)
     {
         FREE_ALL ;
@@ -46,7 +43,7 @@ void mexFunction
     }
 
     // get pr
-    int GET_SCALAR (1, int, pr, 1) ;
+    GET_SCALAR (1, GB_diagnostic, pr, 1) ;
 
     // dump the matrix
     GrB_Info info = GB_check (A, "", pr) ;

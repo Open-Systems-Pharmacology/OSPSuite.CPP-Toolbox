@@ -9,13 +9,11 @@
 
 #include "GB_mex.h"
 
-#define USAGE "C = GB_mex_assign_alias (C, accum, I, J, desc)"
-
 #define FREE_ALL                            \
 {                                           \
     GB_MATRIX_FREE (&C) ;                   \
     GrB_free (&desc) ;                      \
-    GB_mx_put_global (true, 0) ;            \
+    GB_mx_put_global (malloc_debug) ;       \
 }
 
 void mexFunction
@@ -27,23 +25,21 @@ void mexFunction
 )
 {
 
-    bool malloc_debug = GB_mx_get_global (true) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Matrix C = NULL ;
     GrB_Descriptor desc = NULL ;
-    GrB_Index *I = NULL, ni = 0, I_range [3] ;
-    GrB_Index *J = NULL, nj = 0, J_range [3] ;
-    bool ignore ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargout > 1 || nargin < 2 || nargin > 5)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: C = GB_mex_assign_alias (C, accum, I, J, desc)");
     }
 
     // get C (make a deep copy)
     #define GET_DEEP_COPY \
-        C = GB_mx_mxArray_to_Matrix (pargin [0], "C input", true, true) ;
+    { \
+        C = GB_mx_mxArray_to_Matrix (pargin [0], "C input", true) ; \
+    }
     #define FREE_DEEP_COPY GB_MATRIX_FREE (&C) ;
     GET_DEEP_COPY ;
     if (C == NULL)
@@ -62,15 +58,17 @@ void mexFunction
         mexErrMsgTxt ("accum failed") ;
     }
 
+    GrB_Index *I, *J, ni, nj ;
+
     // get I
-    if (!GB_mx_mxArray_to_indices (&I, PARGIN (2), &ni, I_range, &ignore))
+    if (!GB_mx_mxArray_to_indices (&I, PARGIN (2), &ni))
     {
         FREE_ALL ;
         mexErrMsgTxt ("I failed") ;
     }
 
     // get J
-    if (!GB_mx_mxArray_to_indices (&J, PARGIN (3), &nj, J_range, &ignore))
+    if (!GB_mx_mxArray_to_indices (&J, PARGIN (3), &nj))
     {
         FREE_ALL ;
         mexErrMsgTxt ("J failed") ;
@@ -89,9 +87,6 @@ void mexFunction
 
     // C(I,J) = accum (C(I,J),C)
     METHOD (GrB_assign (C, NULL, accum, C, I, ni, J, nj, desc)) ;
-
-    GrB_wait ( ) ;
-    TOC ;
 
     // return C to MATLAB as a struct and free the GraphBLAS C
     pargout [0] = GB_mx_Matrix_to_mxArray (&C, "C output", true) ;

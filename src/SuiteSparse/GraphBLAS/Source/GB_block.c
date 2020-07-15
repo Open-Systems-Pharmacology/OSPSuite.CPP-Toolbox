@@ -11,8 +11,7 @@
 
 GrB_Info GB_block   // apply all pending computations if blocking mode enabled
 (
-    GrB_Matrix A,
-    GB_Context Context
+    GrB_Matrix A
 )
 {
 
@@ -26,14 +25,11 @@ GrB_Info GB_block   // apply all pending computations if blocking mode enabled
     // check for blocking mode
     //--------------------------------------------------------------------------
 
-    // no synchronization is needed since this value is read-only after
-    // GrB_Init sets it.
-
     if (GB_Global.mode == GrB_BLOCKING)
-    { 
+    {
         // delete any lingering zombies and assemble any pending tuples
-        GB_WAIT (A) ;
+        APPLY_PENDING_UPDATES (A) ;
     }
-    return (GrB_SUCCESS) ;
+    return (REPORT_SUCCESS) ;
 }
 

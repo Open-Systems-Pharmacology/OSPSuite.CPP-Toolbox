@@ -11,15 +11,13 @@
 
 #include "GB_mex.h"
 
-#define USAGE "C = GB_mex_select (C, Mask, accum, op, A, k, desc)"
-
 #define FREE_ALL                        \
 {                                       \
     GB_MATRIX_FREE (&C) ;               \
     GB_MATRIX_FREE (&Mask) ;            \
     GB_MATRIX_FREE (&A) ;               \
     GrB_free (&desc) ;                  \
-    GB_mx_put_global (true, 0) ;        \
+    GB_mx_put_global (malloc_debug) ;   \
 }
 
 void mexFunction
@@ -31,7 +29,7 @@ void mexFunction
 )
 {
 
-    bool malloc_debug = GB_mx_get_global (true) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Matrix C = NULL ;
     GrB_Matrix Mask = NULL ;
     GrB_Matrix A = NULL ;
@@ -39,15 +37,15 @@ void mexFunction
     int64_t k = 0 ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargout > 1 || nargin < 6 || nargin > 7)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt (
+            "Usage: C = GB_mex_select (C, Mask, accum, op, A, k, desc)") ;
     }
 
     // get C (make a deep copy)
     #define GET_DEEP_COPY \
-    C = GB_mx_mxArray_to_Matrix (pargin [0], "C input", true, true) ;
+    C = GB_mx_mxArray_to_Matrix (pargin [0], "C input", true) ;
     #define FREE_DEEP_COPY GB_MATRIX_FREE (&C) ;
     GET_DEEP_COPY ;
     if (C == NULL)
@@ -59,7 +57,7 @@ void mexFunction
     mxClassID cclass = GB_mx_Type_to_classID (C->type) ;
 
     // get Mask (shallow copy)
-    Mask = GB_mx_mxArray_to_Matrix (pargin [1], "Mask", false, false) ;
+    Mask = GB_mx_mxArray_to_Matrix (pargin [1], "Mask", false) ;
     if (Mask == NULL && !mxIsEmpty (pargin [1]))
     {
         FREE_ALL ;
@@ -67,7 +65,7 @@ void mexFunction
     }
 
     // get A (shallow copy)
-    A = GB_mx_mxArray_to_Matrix (pargin [4], "A input", false, true) ;
+    A = GB_mx_mxArray_to_Matrix (pargin [4], "A input", false) ;
     if (A == NULL)
     {
         FREE_ALL ;
@@ -90,6 +88,7 @@ void mexFunction
         FREE_ALL ;
         mexErrMsgTxt ("SelectOp failed") ;
     }
+    // GB_check (op, "select", 3) ;
 
     // get k
     k = (int64_t) mxGetScalar (pargin [5]) ;
@@ -102,7 +101,7 @@ void mexFunction
     }
 
     // C<Mask> = accum(C,op(A))
-    if (C->vdim == 1 && (desc == NULL || desc->in0 == GxB_DEFAULT))
+    if (C->ncols == 1 && (desc == NULL || desc->in0 == GxB_DEFAULT))
     {
         // this is just to test the Vector version
         METHOD (GxB_select ((GrB_Vector) C, (GrB_Vector) Mask, accum, op,

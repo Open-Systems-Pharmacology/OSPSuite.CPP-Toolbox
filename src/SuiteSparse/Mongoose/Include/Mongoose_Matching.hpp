@@ -9,9 +9,7 @@
  * Mongoose is also available under other licenses; contact authors for details.
  * -------------------------------------------------------------------------- */
 
-// #pragma once
-#ifndef MONGOOSE_MATCHING_HPP
-#define MONGOOSE_MATCHING_HPP
+#pragma once
 
 #include "Mongoose_EdgeCutOptions.hpp"
 #include "Mongoose_EdgeCutProblem.hpp"
@@ -29,5 +27,3 @@ void matching_SRdeg(EdgeCutProblem *, const EdgeCut_Options *);
 void matching_Cleanup(EdgeCutProblem *, const EdgeCut_Options *);
 
 } // end namespace Mongoose
-
-#endif

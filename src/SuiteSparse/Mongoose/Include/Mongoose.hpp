@@ -9,9 +9,7 @@
  * Mongoose is also available under other licenses; contact authors for details.
  * -------------------------------------------------------------------------- */
 
-// #pragma once
-#ifndef MONGOOSE_HPP
-#define MONGOOSE_HPP
+#pragma once
 
 #include "SuiteSparse_config.h"
 #include <string>
@@ -169,5 +167,3 @@ int patch_version();
 std::string mongoose_version();
 
 } // end namespace Mongoose
-
-#endif

@@ -9,8 +9,6 @@
 
 #include "GB_mex.h"
 
-#define USAGE "w = GB_mex_eWiseAdd_Vector (w, mask, accum, add, u, v, desc)"
-
 #define FREE_ALL            \
 {                           \
     GrB_free (&w) ;         \
@@ -18,7 +16,7 @@
     GrB_free (&v) ;         \
     GrB_free (&desc) ;      \
     GrB_free (&mask) ;      \
-    GB_mx_put_global (true, 0) ;        \
+    GB_mx_put_global (malloc_debug) ; \
 }
 
 void mexFunction
@@ -30,7 +28,7 @@ void mexFunction
 )
 {
 
-    bool malloc_debug = GB_mx_get_global (true) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Vector w = NULL ;
     GrB_Vector u = NULL ;
     GrB_Vector v = NULL ;
@@ -38,15 +36,15 @@ void mexFunction
     GrB_Descriptor desc = NULL ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargout > 1 || nargin < 6 || nargin > 7)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: w = GB_mex_eWiseAdd_Vector "
+        "(w, mask, accum, add, u, v, desc)");
     }
 
     // get w (make a deep copy)
     #define GET_DEEP_COPY \
-    w = GB_mx_mxArray_to_Vector (pargin [0], "w input", true, true) ;
+    w = GB_mx_mxArray_to_Vector (pargin [0], "w input", true) ;
     #define FREE_DEEP_COPY GrB_free (&w) ;
     GET_DEEP_COPY ;
     if (w == NULL)
@@ -57,7 +55,7 @@ void mexFunction
     mxClassID cclass = GB_mx_Type_to_classID (w->type) ;
 
     // get mask (shallow copy)
-    mask = GB_mx_mxArray_to_Vector (pargin [1], "mask", false, false) ;
+    mask = GB_mx_mxArray_to_Vector (pargin [1], "mask", false) ;
     if (mask == NULL && !mxIsEmpty (pargin [1]))
     {
         FREE_ALL ;
@@ -65,7 +63,7 @@ void mexFunction
     }
 
     // get u (shallow copy)
-    u = GB_mx_mxArray_to_Vector (pargin [4], "u input", false, true) ;
+    u = GB_mx_mxArray_to_Vector (pargin [4], "u input", false) ;
     if (u == NULL)
     {
         FREE_ALL ;
@@ -73,7 +71,7 @@ void mexFunction
     }
 
     // get v (shallow copy)
-    v = GB_mx_mxArray_to_Vector (pargin [5], "v input", false, true) ;
+    v = GB_mx_mxArray_to_Vector (pargin [5], "v input", false) ;
     if (v == NULL)
     {
         FREE_ALL ;
@@ -107,9 +105,6 @@ void mexFunction
 
     // w<mask> = accum(w,u+v)
     METHOD (GrB_eWiseAdd (w, mask, accum, add, u, v, desc)) ;
-
-    GrB_wait ( ) ;
-    TOC ;
 
     // return w to MATLAB as a struct and free the GraphBLAS w
     pargout [0] = GB_mx_Vector_to_mxArray (&w, "w output", true) ;

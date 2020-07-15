@@ -16,9 +16,7 @@
  * storing information about matching, coarsening, and partitioning.
  */
 
-// #pragma once
-#ifndef MONGOOSE_EDGECUTPROBLEM_HPP
-#define MONGOOSE_EDGECUTPROBLEM_HPP
+#pragma once
 
 #include "Mongoose_CSparse.hpp"
 #include "Mongoose_Graph.hpp"
@@ -208,5 +206,3 @@ private:
 };
 
 } // end namespace Mongoose
-
-#endif

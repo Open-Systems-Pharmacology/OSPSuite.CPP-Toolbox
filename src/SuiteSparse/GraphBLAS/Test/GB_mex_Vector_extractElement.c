@@ -9,13 +9,11 @@
 
 #include "GB_mex.h"
 
-#define USAGE "x = GB_mex_Vector_extractElement v, I, xclass)"
-
 #define FREE_ALL                        \
 {                                       \
     GrB_free (&v) ;                     \
     GB_FREE_MEMORY (Xtemp, ni, sizeof (double complex)) ; \
-    GB_mx_put_global (true, 0) ;        \
+    GB_mx_put_global (malloc_debug) ;   \
 }
 
 void mexFunction
@@ -27,27 +25,26 @@ void mexFunction
 )
 {
 
-    bool malloc_debug = GB_mx_get_global (true) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Vector v = NULL ;
     void *Y = NULL ;
     void *Xtemp = NULL ;
+    GrB_Index *I = NULL, ni = 0 ; 
     mxClassID xclass ;
     GrB_Type xtype ;
-    GrB_Index *I = NULL, ni = 0, I_range [3] ;
-    bool is_list ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargout > 1 || nargin < 2 || nargin > 3)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: x = GB_mex_Vector_extractElement "
+            "(v, I, xclass)");
     }
 
     #define GET_DEEP_COPY ;
     #define FREE_DEEP_COPY ;
 
     // get v (shallow copy)
-    v = GB_mx_mxArray_to_Vector (pargin [0], "v input", false, true) ;
+    v = GB_mx_mxArray_to_Vector (pargin [0], "v input", false) ;
     if (v == NULL)
     {
         FREE_ALL ;
@@ -56,14 +53,10 @@ void mexFunction
     mxClassID aclass = GB_mx_Type_to_classID (v->type) ;
 
     // get I
-    if (!GB_mx_mxArray_to_indices (&I, pargin [1], &ni, I_range, &is_list))
+    if (!GB_mx_mxArray_to_indices (&I, pargin [1], &ni))
     {
         FREE_ALL ;
         mexErrMsgTxt ("I failed") ;
-    }
-    if (!is_list)
-    {
-        mexErrMsgTxt ("I must be a list") ;
     }
 
     // get xclass, default is class (A), and the corresponding xtype
@@ -193,7 +186,6 @@ void mexFunction
             }
             break;
 
-        case GB_UCT_code   :
         case GB_UDT_code   :
             {
                 // user-defined complex type

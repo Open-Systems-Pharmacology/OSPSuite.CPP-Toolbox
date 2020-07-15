@@ -11,12 +11,10 @@
 
 #include "GB_mex.h"
 
-#define USAGE "iset = GB_mex_mis (A)"
-
 #define FREE_ALL                        \
 {                                       \
     GB_MATRIX_FREE (&A) ;               \
-    GB_mx_put_global (true, 0) ;        \
+    GB_mx_put_global (malloc_debug) ;   \
 }
 
 
@@ -29,19 +27,18 @@ void mexFunction
 )
 {
 
-    bool malloc_debug = GB_mx_get_global (true) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Matrix A = NULL, Iset = NULL ;
     GrB_Vector iset ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargout > 1 || nargin != 1)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: iset = GB_mex_mis (A)") ;
     }
 
     // get A
-    A = GB_mx_mxArray_to_Matrix (pargin [0], "A", false, true) ;
+    A = GB_mx_mxArray_to_Matrix (pargin [0], "A", false) ;
     if (A == NULL)
     {
         FREE_ALL ;

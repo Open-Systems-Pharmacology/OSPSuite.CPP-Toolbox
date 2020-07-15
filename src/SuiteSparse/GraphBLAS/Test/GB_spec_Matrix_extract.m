@@ -19,7 +19,7 @@ end
 
 C = GB_spec_matrix (C) ;
 A = GB_spec_matrix (A) ;
-Mask = GB_spec_getmask (Mask) ;
+Mask = GB_mex_cast (full (Mask), 'logical') ;
 [C_replace, Mask_comp, Atrans, ~] = GB_spec_descriptor (descriptor) ;
 
 %-------------------------------------------------------------------------------
@@ -32,20 +32,12 @@ if (Atrans)
     A.pattern = A.pattern' ;
 end
 
-% expand I and J if empty
-if (ischar (I) & isempty (I))
-    % I = '' is treated as the empty list
-    I = [ ] ;
-elseif (isempty (I) || isequal (I, ':'))
-    % I = [ ] is treated as ":"
+% do the work
+if (isempty (I))
     nrows = size (A.matrix, 1) ;
     I = 1:nrows ;
 end
-if (ischar (J) & isempty (J))
-    % J = '' is treated as the empty list
-    J = [ ] ;
-elseif (isempty (J) || isequal (J, ':'))
-    % J = [ ] is treated as the ":"
+if (isempty (J))
     ncols = size (A.matrix, 2) ;
     J = 1:ncols ;
 end

@@ -9,17 +9,15 @@
 
 // copy and typecast a matrix
 
-#include "GB_mex.h"
-
-#define USAGE "C = GB_mex_dup (A, cclass, method)"
-
 #define FREE_ALL                        \
 {                                       \
     GrB_free (&A) ;                     \
     GrB_free (&C) ;                     \
     GrB_free (&desc) ;                  \
-    GB_mx_put_global (true, 0) ;        \
+    GB_mx_put_global (malloc_debug) ;   \
 }
+
+#include "GB_mex.h"
 
 void mexFunction
 (
@@ -30,22 +28,21 @@ void mexFunction
 )
 {
 
-    bool malloc_debug = GB_mx_get_global (true) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Matrix A = NULL, C = NULL ;
     GrB_Descriptor desc = NULL ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargout > 1 || nargin < 1 || nargin > 3)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: C = GB_mex_dup (A, cclass, method)");
     }
 
-    #define GET_DEEP_COPY  ;
+    #define GET_DEEP_COPY ;
     #define FREE_DEEP_COPY ;
 
     // get A (shallow copy)
-    A = GB_mx_mxArray_to_Matrix (pargin [0], "A input", false, true) ;
+    A = GB_mx_mxArray_to_Matrix (pargin [0], "A input", false) ;
     if (A == NULL)
     {
         FREE_ALL ;
@@ -73,7 +70,7 @@ void mexFunction
     }
 
     // get method
-    int GET_SCALAR (2, int, method, 0) ;
+    GET_SCALAR (2, int, method, 0) ;
 
     if (ctype == A->type)
     {
@@ -91,30 +88,13 @@ void mexFunction
             // printf ("tran dup\n") ;
             GrB_Type type ;
             GrB_Index nrows, ncols ;
-
-            #undef GET_DEEP_COPY
-            #undef FREE_DEEP_COPY
-
-            #define GET_DEEP_COPY                               \
-            {                                                   \
-                GxB_Matrix_type (&type, A) ;                    \
-                GrB_Matrix_nrows (&nrows, A) ;                  \
-                GrB_Matrix_ncols (&ncols, A) ;                  \
-                GrB_Matrix_new (&C, type, nrows, ncols) ;       \
-                GrB_Descriptor_new (&desc) ;                    \
-                GxB_set (desc, GrB_INP0, GrB_TRAN) ;            \
-            }
-            #define FREE_DEEP_COPY                              \
-            {                                                   \
-                GrB_free (&C) ;                                 \
-                GrB_free (&desc) ;                              \
-            }
-
-            GET_DEEP_COPY ;
+            METHOD (GxB_Matrix_type (&type, A)) ;
+            METHOD (GrB_Matrix_nrows (&nrows, A)) ;
+            METHOD (GrB_Matrix_ncols (&ncols, A)) ;
+            METHOD (GrB_Matrix_new (&C, type, nrows, ncols)) ;
+            METHOD (GrB_Descriptor_new (&desc)) ;
+            METHOD (GrB_Descriptor_set (desc, GrB_INP0, GrB_TRAN)) ;
             METHOD (GrB_transpose (C, NULL, NULL, A, desc)) ;
-
-            #undef GET_DEEP_COPY
-            #undef FREE_DEEP_COPY
 
         }
     }
@@ -125,25 +105,12 @@ void mexFunction
         // C = (ctype) A
         // printf ("cast\n") ;
         GrB_Index nrows, ncols ;
-        #define GET_DEEP_COPY                               \
-        {                                                   \
-            GrB_Matrix_nrows (&nrows, A) ;                  \
-            GrB_Matrix_ncols (&ncols, A) ;                  \
-            GrB_Matrix_new (&C, ctype, nrows, ncols) ;      \
-            GrB_Descriptor_new (&desc) ;                    \
-            GxB_set (desc, GrB_INP0, GrB_TRAN) ;            \
-        }
-        #define FREE_DEEP_COPY                              \
-        {                                                   \
-            GrB_free (&C) ;                                 \
-            GrB_free (&desc) ;                              \
-        }
-
-        GET_DEEP_COPY ;
+        METHOD (GrB_Matrix_nrows (&nrows, A)) ;
+        METHOD (GrB_Matrix_ncols (&ncols, A)) ;
+        METHOD (GrB_Matrix_new (&C, ctype, nrows, ncols)) ;
+        METHOD (GrB_Descriptor_new (&desc)) ;
+        METHOD (GrB_Descriptor_set (desc, GrB_INP0, GrB_TRAN)) ;
         METHOD (GrB_transpose (C, NULL, NULL, A, desc)) ;
-
-        #undef GET_DEEP_COPY
-        #undef FREE_DEEP_COPY
     }
 
     // return C to MATLAB as a struct and free the GraphBLAS C

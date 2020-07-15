@@ -8,7 +8,7 @@ if (nargin < 1)
     cover = 1 ;
 end
 
-fprintf ('\ntest58: ----- quick performance for GB_mex_eWiseAdd_Matrix\n') ;
+fprintf ('\n----- quick performance for GB_mex_eWiseAdd_Matrix\n') ;
 
 
 add = 'plus' ;
@@ -25,8 +25,9 @@ if (~cover)
     C = Cin + (A+B) ;
     t1 =toc ;
 
+    tic
     C2 = GB_mex_eWiseAdd_Matrix (Cin, Mask, accum, add, A, B, [ ]) ;
-    t2 = gbresults ;
+    t2 = toc ;
     assert (isequal (C2.matrix,  C))
 
     fprintf ('MATLAB: %g GB: %g  speedup: %g\n', t1, t2, t1/t2) ;
@@ -64,12 +65,11 @@ for m = nn
         end
         t1 = toc / trials ;
 
-        tg = 0 ;
+        tic
         for k = 1:trials
             C2 = GB_mex_eWiseAdd_Matrix (Cin, [ ], accum, add, A, B, [ ]) ;
-            tg = tg + gbresults ;
         end
-        t2 = tg /trials ;
+        t2 = toc /trials ;
         assert (isequal (C1, C2.matrix)) ;
 
         fprintf ('A+B:   ') ;
@@ -85,12 +85,11 @@ for m = nn
         end
         t1 = toc / trials ;
 
-        tg = 0 ;
+        tic
         for k = 1:trials
             C2 = GB_mex_eWiseAdd_Matrix (Cin, [ ], accum, add, A, BT, Dnt) ;
-            tg = tg + gbresults ;
         end
-        t2 = tg /trials ;
+        t2 = toc / trials ;
         assert (isequal (C1, C2.matrix)) ;
 
         fprintf ('A+B'':  ') ;
@@ -106,12 +105,11 @@ for m = nn
         end
         t1 = toc / trials  ;
 
-        tg = 0 ;
+        tic
         for k = 1:trials
             C2 = GB_mex_eWiseAdd_Matrix (Cin, [ ], accum, add, AT, B, Dtn) ;
-            tg = tg + gbresults ;
         end
-        t2 = tg /trials ;
+        t2 = toc / trials ;
         assert (isequal (C1, C2.matrix)) ;
 
         fprintf ('A''+B:  ') ;
@@ -127,12 +125,11 @@ for m = nn
         end
         t1 = toc / trials ;
 
-        tg = 0 ;
+        tic
         for k = 1:trials
             C2 = GB_mex_eWiseAdd_Matrix (Cin, [ ], accum, add, AT, BT, Dtt) ;
-            tg = tg + gbresults ;
         end
-        t2 = tg /trials ;
+        t2 = toc / trials ;
         assert (isequal (C1, C2.matrix)) ;
 
         fprintf ('A''+B'': ') ;

@@ -9,9 +9,7 @@
  * Mongoose is also available under other licenses; contact authors for details.
  * -------------------------------------------------------------------------- */
 
-// #pragma once
-#ifndef MONGOOSE_SANITIZE_HPP
-#define MONGOOSE_SANITIZE_HPP
+#pragma once
 
 #include "Mongoose_CSparse.hpp"
 #include "Mongoose_Internal.hpp"
@@ -26,5 +24,3 @@ void removeDiagonal(cs *A);
 cs *mirrorTriangular(cs *A);
 
 } // end namespace Mongoose
-
-#endif

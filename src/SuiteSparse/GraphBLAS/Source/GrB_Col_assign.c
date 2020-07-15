@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// GrB_Col_assign:    C<mask>(Rows,col) = accum (C(Rows,col),u)
+// GrB_Col_assign: C<mask>(I,j) = accum (C(I,j),u)
 //------------------------------------------------------------------------------
 
 // SuiteSparse:GraphBLAS, Timothy A. Davis, (c) 2017-2018, All Rights Reserved.
@@ -7,55 +7,50 @@
 
 //------------------------------------------------------------------------------
 
-// Compare with GxB_Col_subassign, which uses the mask and C_replace differently
-
 #include "GB.h"
 
-GrB_Info GrB_Col_assign             // C<mask>(Rows,col) = accum (C(Rows,col),u)
+GrB_Info GrB_Col_assign             // C<mask>(I,j) = accum (C(I,j),u)
 (
     GrB_Matrix C,                   // input/output matrix for results
-    const GrB_Vector mask,          // mask for C(:,col), unused if NULL
-    const GrB_BinaryOp accum,       // optional accum for z=accum(C(Rows,col),t)
+    const GrB_Vector mask,          // optional mask for C(:,j), unused if NULL
+    const GrB_BinaryOp accum,       // optional accum for z=accum(C(I,j),t)
     const GrB_Vector u,             // input vector
-    const GrB_Index *Rows,          // row indices
-    GrB_Index nRows,                // number of row indices
-    GrB_Index col,                  // column index
-    const GrB_Descriptor desc       // descriptor for C(:,col) and mask
+    const GrB_Index *I,             // row indices
+    const GrB_Index ni,             // number of row indices
+    const GrB_Index j,              // column index
+    const GrB_Descriptor desc       // descriptor for C(:,j) and mask
 )
-{ 
+{
 
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
 
-    GB_WHERE ("GrB_Col_assign (C, mask, accum, u, Rows, nRows, col, desc)") ;
-    GB_RETURN_IF_NULL_OR_FAULTY (C) ;
-    GB_RETURN_IF_FAULTY (mask) ;
-    GB_RETURN_IF_NULL_OR_FAULTY (u) ;
-    ASSERT (mask == NULL || GB_VECTOR_OK (mask)) ;
-    ASSERT (GB_VECTOR_OK (u)) ;
+    WHERE ("GrB_Col_assign (C, mask, accum, u, I, ni, j, desc)") ;
+
+    RETURN_IF_NULL_OR_UNINITIALIZED (C) ;
+    RETURN_IF_UNINITIALIZED (mask) ;
+    RETURN_IF_NULL_OR_UNINITIALIZED (u) ;
 
     // get the descriptor
-    GB_GET_DESCRIPTOR (info, desc, C_replace, Mask_comp, xx1, xx2, xx3) ;
+    GET_DESCRIPTOR (info, desc, C_replace, Mask_comp, ignore1, ignore2) ;
 
     //--------------------------------------------------------------------------
-    // C(Rows,col)<mask> = accum (C(Rows,col), u)
+    // C(I,j)<mask> = accum (C(I,j), u) and variations
     //--------------------------------------------------------------------------
 
-    // construct the column index list Cols = [ col ] of length nCols = 1
-    GrB_Index Cols [1] ;
-    Cols [0] = col ;
+    // construct the column index list J = [ j ] of length nj = 1
+    GrB_Index J [1] ;
+    J [0] = j ;
 
     return (GB_assign (
         C,                  C_replace,      // C matrix and its descriptor
         (GrB_Matrix) mask,  Mask_comp,      // mask and its descriptor
-        false,                              // do not transpose the mask
-        accum,                              // for accum (C(Rows,col),u)
+        accum,                              // for accum (C(I,j),u)
         (GrB_Matrix) u,     false,          // u as a matrix; never transposed
-        Rows, nRows,                        // row indices
-        Cols, 1,                            // a single column index
+        I, ni,                              // row indices
+        J, 1,                               // column indices
         false, NULL, 0,                     // no scalar expansion
-        true, false,                        // GrB_Col_assign
-        Context)) ;
+        true, false)) ;                     // GrB_Col_assign
 }
 

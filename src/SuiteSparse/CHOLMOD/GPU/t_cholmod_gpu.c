@@ -17,10 +17,6 @@
 
 #include <string.h>
 #include "cholmod_template.h"
-#include "cholmod_gpu_kernels.h"
-#include <fenv.h>
-#include <cuda.h>
-#include <cuda_runtime.h>
 
 #undef L_ENTRY
 #ifdef REAL

@@ -7,13 +7,14 @@
 
 //------------------------------------------------------------------------------
 
-#include "GB_mex.h"
+// Usage:
+// GB_mex_semiring (semiring_struct)
 
-#define USAGE "GB_mex_semiring (semiring_struct))"
+#include "GB_mex.h"
 
 #define FREE_ALL            \
 {                           \
-    GB_mx_put_global (true, 0) ;        \
+    GB_mx_put_global (malloc_debug) ; \
 }
 
 void mexFunction
@@ -25,20 +26,19 @@ void mexFunction
 )
 {
 
-    bool malloc_debug = GB_mx_get_global (true) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Semiring semiring = NULL ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargin != 1)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: GB_mex_semiring (semiring_struct))") ;
     }
 
     GB_mx_mxArray_to_Semiring (&semiring, pargin [0], "semiring",
         mxDOUBLE_CLASS) ;
 
-    GrB_Info info = GB_check (semiring, "semiring", GB3) ;
+    GrB_Info info = GB_check (semiring, "semiring", 3) ;
     if (info != GrB_SUCCESS)
     {
         mexErrMsgTxt (GrB_error ( )) ;

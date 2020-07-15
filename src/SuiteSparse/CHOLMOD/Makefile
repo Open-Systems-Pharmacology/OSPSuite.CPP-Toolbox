@@ -11,16 +11,16 @@ include ../SuiteSparse_config/SuiteSparse_config.mk
 
 # Compile the C-callable libraries and the Demo programs.
 all:
-	( cd Lib ; $(MAKE) --jobs=$(JOBS) )
+	( cd Lib ; $(MAKE) )
 	( cd Demo ; $(MAKE) )
 
 # Compile the C-callable libraries only.
 library:
-	( cd Lib ; $(MAKE) --jobs=$(JOBS) )
+	( cd Lib ; $(MAKE) )
 
 # compile the static libraries only
 static:
-	( cd Lib    ; $(MAKE) static --jobs=$(JOBS) )
+	( cd Lib    ; $(MAKE) static )
 
 # Remove all files not in the original distribution
 purge:

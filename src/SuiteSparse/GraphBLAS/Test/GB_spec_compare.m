@@ -1,4 +1,5 @@
-function ok = GB_spec_compare (C_spec, C_mex, identity, tol)
+function ok = GB_spec_compare (C_spec, C_mex, identity)
+%
 %GB_SPEC_COMPARE compare MATLAB mimic result with GraphBLAS result
 % ok = GB_spec_compare (C_spec, C_mex, identity)
 %
@@ -15,14 +16,6 @@ if (nargin < 3)
     identity = 0 ;
 end
 
-if (nargin < 4)
-    if (isfloat (identity))
-        tol = 64*eps (class (identity)) ;
-    else
-        tol = 0 ;
-    end
-end
-
 % Convert C_mex from a sparse matrix into a dense matrix.  It will have
 % explicit identity values where entries were not in the pattern of the sparse
 % C_mex.matrix.  Entries outside the pattern are "don't care" values.  They may
@@ -36,8 +29,7 @@ C1 = GB_spec_matrix (C_spec, identity) ;
 C2 = GB_spec_matrix (C_mex, identity) ;
 
 try
-    % ok_matrix = isequalwithequalnans (C1.matrix, C2.matrix) ;
-    ok_matrix = isequal_roundoff (C1.matrix, C2.matrix, tol) ;
+    ok_matrix = isequalwithequalnans (C1.matrix, C2.matrix) ;
 catch
     ok_matrix = false ;
 end
@@ -54,32 +46,30 @@ catch
     ok_class = false ;
 end
 
-%{
 if (~ok_class)
     fprintf ('class is wrong:\n') ;
-    % C1.class
-    % C2.class
+    C1.class
+    C2.class
 end
 
 if (~ok_matrix)
     fprintf ('matrix is wrong:\n') ;
     identity
-    % C1.matrix
-    % C2.matrix
+    C1.matrix
+    C2.matrix
 end
 
 if (~ok_pattern)
     fprintf ('pattern is wrong:\n') ;
-    % C1.pattern
-    % C2.pattern
+    C1.pattern
+    C2.pattern
 end
-%}
 
 if (~ok_class || ~ok_pattern || ~ok_matrix)
-    % C_spec
-    % % C_mex
-    % C1
-    % C2
+    C_spec
+    C_mex
+    C1
+    C2
     fprintf ('matrix: %d pattern: %d class %d\n', ...
         ok_matrix, ok_pattern, ok_class) ;
 end

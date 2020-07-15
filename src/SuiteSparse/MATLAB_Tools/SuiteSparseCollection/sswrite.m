@@ -298,12 +298,7 @@ for k = 1:length(auxfields)
 	error (['invalid aux component: ' what]) ;
     end
 
-    if (sscellstring (X) && Problem.id > 2776)
-
-        % write out a cell array of strings as a single text file
-        sstextwrite ([probname '_' what '.txt'], X) ;
-
-    elseif (iscell (X))
+    if (iscell (X))
 	len = length (X) ;
 	for i = 1:len
 	    % this problem includes a sequence of matrices in the new

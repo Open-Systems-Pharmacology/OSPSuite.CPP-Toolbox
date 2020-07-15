@@ -17,10 +17,6 @@
 #ifdef GPU_BLAS
 #include "omp.h"
 #include <fenv.h>
-#ifndef SUITESPARSE_GPU_EXTERN_ON
-#include <cuda.h>
-#include <cuda_runtime.h>
-#endif
 #endif
 
 /* CHOLMOD_GPU_PRINTF: for printing GPU debug error messages */

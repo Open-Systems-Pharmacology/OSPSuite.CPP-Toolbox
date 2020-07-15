@@ -12,10 +12,6 @@
 // MATLAB interface to GrB_reduce, which relies on GrB_Matrix_reduce_BinaryOp
 // and GrB_Matrix_reduce_Monoid to reduce a matrix to a vector.
 
-#include "GB_mex.h"
-
-#define USAGE "w = GB_mex_reduce_to_vector (w, mask, accum, reduce, A, desc)"
-
 #define FREE_ALL                        \
 {                                       \
     GB_MATRIX_FREE (&A) ;               \
@@ -26,8 +22,10 @@
     {                                   \
         GrB_free (&reduce) ;            \
     }                                   \
-    GB_mx_put_global (true, 0) ;        \
+    GB_mx_put_global (malloc_debug) ;   \
 }
+
+#include "GB_mex.h"
 
 void mexFunction
 (
@@ -38,7 +36,7 @@ void mexFunction
 )
 {
 
-    bool malloc_debug = GB_mx_get_global (true) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Matrix A = NULL ;
     GrB_Vector w = NULL ;
     GrB_Vector mask = NULL ;
@@ -47,15 +45,15 @@ void mexFunction
     bool reduce_is_complex = false ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargout > 1 || nargin < 5 || nargin > 6)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: w = GB_mex_reduce_to_vector "
+            "(w, mask, accum, reduce, A, desc)") ;
     }
 
     // get w (make a deep copy)
     #define GET_DEEP_COPY \
-    w = GB_mx_mxArray_to_Vector (pargin [0], "w input", true, true) ;
+    w = GB_mx_mxArray_to_Vector (pargin [0], "w input", true) ;
     #define FREE_DEEP_COPY GrB_free (&w) ;
     GET_DEEP_COPY ;
     if (w == NULL)
@@ -66,7 +64,7 @@ void mexFunction
     mxClassID cclass = GB_mx_Type_to_classID (w->type) ;
 
     // get mask (shallow copy)
-    mask = GB_mx_mxArray_to_Vector (pargin [1], "mask", false, false) ;
+    mask = GB_mx_mxArray_to_Vector (pargin [1], "mask", false) ;
     if (mask == NULL && !mxIsEmpty (pargin [1]))
     {
         FREE_ALL ;
@@ -74,7 +72,7 @@ void mexFunction
     }
 
     // get A (shallow copy)
-    A = GB_mx_mxArray_to_Matrix (pargin [4], "A input", false, true) ;
+    A = GB_mx_mxArray_to_Matrix (pargin [4], "A input", false) ;
     if (A == NULL)
     {
         FREE_ALL ;

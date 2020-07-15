@@ -11,13 +11,11 @@
 
 #include "GB_mex.h"
 
-#define USAGE "C = GB_mex_diag (A,k)"
-
 #define FREE_ALL                        \
 {                                       \
     GB_MATRIX_FREE (&A) ;               \
     GB_MATRIX_FREE (&C) ;               \
-    GB_mx_put_global (true, 0) ;        \
+    GB_mx_put_global (malloc_debug) ;   \
 }
 
 
@@ -30,21 +28,20 @@ void mexFunction
 )
 {
 
-    bool malloc_debug = GB_mx_get_global (true) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Matrix A = NULL, C = NULL ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargout > 1 || nargin < 1 || nargin > 2)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: C = GB_mex_diag (A,k)") ;
     }
 
     #define GET_DEEP_COPY ;
     #define FREE_DEEP_COPY ;
 
     // get A
-    A = GB_mx_mxArray_to_Matrix (pargin [0], "A", false, true) ;
+    A = GB_mx_mxArray_to_Matrix (pargin [0], "A", false) ;
     if (A == NULL)
     {
         FREE_ALL ;
@@ -58,17 +55,8 @@ void mexFunction
         k = (int64_t) mxGetScalar (pargin [1]) ;
     }
 
-    #define GET_DEEP_COPY ;
-    #define FREE_DEEP_COPY ;
-
     // construct C
-    METHOD (GrB_Matrix_new (&C, GrB_FP64, A->vlen, A->vdim)) ;
-
-    #undef GET_DEEP_COPY
-    #undef FREE_DEEP_COPY
-
-    #define GET_DEEP_COPY  GrB_Matrix_new (&C, GrB_FP64, A->vlen, A->vdim) ;
-    #define FREE_DEEP_COPY GrB_free (&C) ;
+    METHOD (GrB_Matrix_new (&C, GrB_FP64, A->nrows, A->ncols)) ;
 
     // C = diag (A,k)
     METHOD (GxB_Matrix_select (C, NULL, NULL, GxB_DIAG, A, &k, NULL)) ;

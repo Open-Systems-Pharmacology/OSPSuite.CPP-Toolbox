@@ -7,10 +7,9 @@
 
 //------------------------------------------------------------------------------
 
-// This is used by GB_AxB_Gustavson_builtin.c, GB_AxB_dot.c and GB_AxB_heap.c
-// to create built-in versions of sparse matrix-matrix multiplication.  The
-// #include'ing file defines the GB_AxB_WORKER macro, and mult_opcode,
-// add_opcode, xycode, and zcode
+// This is used by GB_AxB_builtin.c and GB_Matrix_AdotB.c to create built-in
+// versions of sparse matrix-matrix multiplication.  The #include'ing file
+// #define's the AxB macro, and mult_opcode, add_opcode, xycode, and zcode
 
 {
     //--------------------------------------------------------------------------
@@ -26,7 +25,7 @@
 
             // 44 semirings: (min,max,plus,times) for non-boolean, and
             // (or,and,xor,eq) for boolean
-            #define GB_MULT_NAME _first
+            #define mult _first
             #include "GB_AxB_template.c"
             break ;
 
@@ -36,7 +35,7 @@
 
             // 44 semirings: (min,max,plus,times) for non-boolean, and
             // (or,and,xor,eq) for boolean
-            #define GB_MULT_NAME _second
+            #define mult _second
             #include "GB_AxB_template.c"
             break ;
 
@@ -46,8 +45,8 @@
 
             // 40 semirings: (min,max,plus,times) for non-boolean
             // MIN == TIMES == AND for boolean
-            #define GB_NO_BOOLEAN
-            #define GB_MULT_NAME _min
+            #define NO_BOOLEAN
+            #define mult _min
             #include "GB_AxB_template.c"
             break ;
 
@@ -57,8 +56,8 @@
 
             // 40 semirings: (min,max,plus,times) for non-boolean
             // MAX == PLUS == OR for boolean
-            #define GB_NO_BOOLEAN
-            #define GB_MULT_NAME _max
+            #define NO_BOOLEAN
+            #define mult _max
             #include "GB_AxB_template.c"
             break ;
 
@@ -68,19 +67,19 @@
 
             // 40 semirings: (min,max,plus,times) for non-boolean
             // MAX == PLUS == OR for boolean
-            #define GB_NO_BOOLEAN
-            #define GB_MULT_NAME _plus
+            #define NO_BOOLEAN
+            #define mult _plus
             #include "GB_AxB_template.c"
             break ;
 
         //----------------------------------------------------------------------
-        case GB_MINUS_opcode   :    // z = x - y
+        case GB_MINUS_opcode   :    // z = flipxy ? (y-x) : (x-y)
         //----------------------------------------------------------------------
 
             // 40 semirings: (min,max,plus,times) for non-boolean
             // MINUS == NE == ISNE == XOR for boolean
-            #define GB_NO_BOOLEAN
-            #define GB_MULT_NAME _minus
+            #define NO_BOOLEAN
+            #define mult _minus
             #include "GB_AxB_template.c"
             break ;
 
@@ -90,20 +89,20 @@
 
             // 40 semirings: (min,max,plus,times) for non-boolean
             // MIN == TIMES == AND for boolean
-            #define GB_NO_BOOLEAN
-            #define GB_MULT_NAME _times
+            #define NO_BOOLEAN
+            #define mult _times
             #include "GB_AxB_template.c"
             break ;
 
         //----------------------------------------------------------------------
-        case GB_DIV_opcode   :      // z = x / y
+        case GB_DIV_opcode   :      // z = flipxy ? (y / x) : (x / y)
         //----------------------------------------------------------------------
 
             // 40 semirings: (min,max,plus,times) for non-boolean
             // FIRST == DIV for boolean
             // See Source/GB.h for disscusion on integer division
-            #define GB_NO_BOOLEAN
-            #define GB_MULT_NAME _div
+            #define NO_BOOLEAN
+            #define mult _div
             #include "GB_AxB_template.c"
             break ;
 
@@ -113,8 +112,8 @@
 
             // 40 semirings: (min,max,plus,times) for non-boolean
             // ISEQ == EQ for boolean
-            #define GB_NO_BOOLEAN
-            #define GB_MULT_NAME _iseq
+            #define NO_BOOLEAN
+            #define mult _iseq
             #include "GB_AxB_template.c"
             break ;
 
@@ -124,8 +123,8 @@
 
             // 40 semirings: (min,max,plus,times) for non-boolean
             // MINUS == NE == ISNE == XOR for boolean
-            #define GB_NO_BOOLEAN
-            #define GB_MULT_NAME _isne
+            #define NO_BOOLEAN
+            #define mult _isne
             #include "GB_AxB_template.c"
             break ;
 
@@ -135,8 +134,8 @@
 
             // 40 semirings: (min,max,plus,times) for non-boolean
             // ISGT == GT for boolean
-            #define GB_NO_BOOLEAN
-            #define GB_MULT_NAME _isgt
+            #define NO_BOOLEAN
+            #define mult _isgt
             #include "GB_AxB_template.c"
             break ;
 
@@ -146,8 +145,8 @@
 
             // 40 semirings: (min,max,plus,times) for non-boolean
             // ISLT == LT for boolean
-            #define GB_NO_BOOLEAN
-            #define GB_MULT_NAME _islt
+            #define NO_BOOLEAN
+            #define mult _islt
             #include "GB_AxB_template.c"
             break ;
 
@@ -157,8 +156,8 @@
 
             // 40 semirings: (min,max,plus,times) for non-boolean
             // ISGE == GE for boolean
-            #define GB_NO_BOOLEAN
-            #define GB_MULT_NAME _isge
+            #define NO_BOOLEAN
+            #define mult _isge
             #include "GB_AxB_template.c"
             break ;
 
@@ -168,8 +167,8 @@
 
             // 40 semirings: (min,max,plus,times) for non-boolean
             // ISLE == LE for boolean
-            #define GB_NO_BOOLEAN
-            #define GB_MULT_NAME _isle
+            #define NO_BOOLEAN
+            #define mult _isle
             #include "GB_AxB_template.c"
             break ;
 
@@ -178,7 +177,7 @@
         //----------------------------------------------------------------------
 
             // 44 semirings: (and,or,xor,eq) * (11 types)
-            #define GB_MULT_NAME _eq
+            #define mult _eq
             #include "GB_AxB_compare_template.c"
             break ;
 
@@ -188,8 +187,8 @@
 
             // 40 semirings: (and,or,xor,eq) * (10 types)
             // MINUS == NE == ISNE == XOR for boolean
-            #define GB_NO_BOOLEAN
-            #define GB_MULT_NAME _ne
+            #define NO_BOOLEAN
+            #define mult _ne
             #include "GB_AxB_compare_template.c"
             break ;
 
@@ -198,7 +197,7 @@
         //----------------------------------------------------------------------
 
             // 44 semirings: (and,or,xor,eq) * (11 types)
-            #define GB_MULT_NAME _gt
+            #define mult _gt
             #include "GB_AxB_compare_template.c"
             break ;
 
@@ -207,7 +206,7 @@
         //----------------------------------------------------------------------
 
             // 44 semirings: (and,or,xor,eq) * (11 types)
-            #define GB_MULT_NAME _lt
+            #define mult _lt
             #include "GB_AxB_compare_template.c"
             break ;
 
@@ -216,7 +215,7 @@
         //----------------------------------------------------------------------
 
             // 44 semirings: (and,or,xor,eq) * (11 types)
-            #define GB_MULT_NAME _ge
+            #define mult _ge
             #include "GB_AxB_compare_template.c"
             break ;
 
@@ -225,7 +224,7 @@
         //----------------------------------------------------------------------
 
             // 44 semirings: (and,or,xor,eq) * (11 types)
-            #define GB_MULT_NAME _le
+            #define mult _le
             #include "GB_AxB_compare_template.c"
             break ;
 
@@ -239,7 +238,7 @@
 
             // 44 semirings: (min,max,plus,times) for non-boolean, and
             // (or,and,xor,eq) for boolean
-            #define GB_MULT_NAME _lor
+            #define mult _lor
             #include "GB_AxB_template.c"
             break ;
 
@@ -249,7 +248,7 @@
 
             // 44 semirings: (min,max,plus,times) for non-boolean, and
             // (or,and,xor,eq) for boolean
-            #define GB_MULT_NAME _land
+            #define mult _land
             #include "GB_AxB_template.c"
             break ;
 
@@ -259,7 +258,7 @@
 
             // 44 semirings: (min,max,plus,times) for non-boolean, and
             // (or,and,xor,eq) for boolean
-            #define GB_MULT_NAME _lxor
+            #define mult _lxor
             #include "GB_AxB_template.c"
             break ;
 

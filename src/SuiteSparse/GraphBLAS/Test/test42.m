@@ -56,7 +56,6 @@ assert (spok (T) == 1) ;
 %     % pause
 % end
 
-fprintf ('matrix from collection, no sorting:\n') ;
 Prob = ssget (939)
 A = Prob.A ;
 [m n] = size (A) ;
@@ -103,7 +102,7 @@ catch
 end
 assert (ok) ;
 
-fprintf ('\nrandom matrix, with duplicates:\n') ;
+fprintf ('\nduplicates:\n') ;
 i2 = floor (rand (1000000,1) * n) + 1 ;
 j2 = floor (rand (1000000,1) * n) + 1 ;
 x2 = rand (1000000,1) ;
@@ -152,7 +151,8 @@ catch
 end
 assert (ok) ;
 
-fprintf ('\nsame random matrix, but presorted:\n') ;
+
+fprintf ('\npresorted:\n') ;
 [ignore,p] = sortrows ([j i x]) ;
 i = i (p) ;
 j = j (p) ;

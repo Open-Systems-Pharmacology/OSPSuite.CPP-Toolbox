@@ -14,22 +14,22 @@ GrB_Info GrB_Matrix_nvals   // get the number of entries in a matrix
     GrB_Index *nvals,       // matrix has nvals entries
     const GrB_Matrix A      // matrix to query
 )
-{ 
+{
 
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
 
-    GB_WHERE ("GrB_Matrix_nvals (&nvals, A)") ;
-    GB_RETURN_IF_NULL_OR_FAULTY (A) ;
+    WHERE ("GrB_Matrix_nvals (&nvals, A)") ;
+    RETURN_IF_NULL_OR_UNINITIALIZED (A) ;
 
     // do not check nvals; pending updates must be applied first, in
-    // GB_nvals, per Table 2.4 in the spec
+    // GB_Matrix_nvals, per Table 2.4 in the spec
 
     //--------------------------------------------------------------------------
     // get the number of entries
     //--------------------------------------------------------------------------
 
-    return (GB_nvals (nvals, A, Context)) ;
+    return (GB_Matrix_nvals (nvals, A)) ;
 }
 

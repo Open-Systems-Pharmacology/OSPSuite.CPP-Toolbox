@@ -18,9 +18,7 @@
  * uses the same integer (csi or SuiteSparse_long) as the Int in Mongoose.
  */
 
-// #pragma once
-#ifndef MONGOOSE_CSPARSE_HPP
-#define MONGOOSE_CSPARSE_HPP
+#pragma once
 
 #include "Mongoose_Internal.hpp"
 #include <limits.h>
@@ -67,5 +65,3 @@ cs *cs_spalloc(csi m, csi n, csi nzmax, csi values, csi triplet);
 cs *cs_spfree(cs *A);
 
 } // end namespace Mongoose
-
-#endif

@@ -17,13 +17,13 @@ GrB_Info GrB_BinaryOp_free          // free a user-created binary operator
 
     if (binaryop != NULL)
     {
-        // only free a run-time user-defined operator
+        // only free a user-defined operator, not a built-in one
         GrB_BinaryOp op = *binaryop ;
-        if (op != NULL && op->opcode == GB_USER_R_opcode)
+        if (op != NULL && op->opcode == GB_USER_opcode)
         {
-            if (op->magic == GB_MAGIC)
-            { 
-                op->magic = GB_FREED ;  // to help detect dangling pointers
+            if (op->magic == MAGIC)
+            {
+                op->magic = FREED ;         // to help detect dangling pointers
                 GB_FREE_MEMORY (*binaryop, 1,
                     sizeof (struct GB_BinaryOp_opaque)) ;
             }

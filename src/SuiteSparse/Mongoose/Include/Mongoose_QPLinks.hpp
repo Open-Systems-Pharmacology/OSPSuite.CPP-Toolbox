@@ -9,9 +9,7 @@
  * Mongoose is also available under other licenses; contact authors for details.
  * -------------------------------------------------------------------------- */
 
-// #pragma once
-#ifndef MONGOOSE_QPLINKS_HPP
-#define MONGOOSE_QPLINKS_HPP
+#pragma once
 
 #include "Mongoose_EdgeCutOptions.hpp"
 #include "Mongoose_EdgeCutProblem.hpp"
@@ -24,5 +22,3 @@ namespace Mongoose
 bool QPLinks(EdgeCutProblem *, const EdgeCut_Options *, QPDelta *);
 
 } // end namespace Mongoose
-
-#endif

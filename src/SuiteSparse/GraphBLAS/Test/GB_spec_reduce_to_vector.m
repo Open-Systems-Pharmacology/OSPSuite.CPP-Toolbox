@@ -40,9 +40,8 @@ A = GB_spec_matrix (A, identity) ;
 % get the input vector
 w = GB_spec_matrix (w, identity) ;
 
-% get the mask
-mask = GB_spec_getmask (mask) ;
-
+% Mask is a dense logical matrix, not a struct
+mask = GB_mex_cast (full (mask), 'logical') ;
 [C_replace Mask_comp Atrans ~] = GB_spec_descriptor (descriptor) ;
 
 %-------------------------------------------------------------------------------

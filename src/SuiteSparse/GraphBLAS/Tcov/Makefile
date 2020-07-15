@@ -17,7 +17,7 @@ clean:
 
 distclean: clean
 	$(RM) *.mex*
-	$(RM) tmp*/* errlog.txt gbstat.mat fprint.txt
+	$(RM) cover_*.c errlog.txt gbstat.mat
 
 purge: distclean
 	$(RM) log.txt

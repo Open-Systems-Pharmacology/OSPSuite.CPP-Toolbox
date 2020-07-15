@@ -14,13 +14,11 @@
 
 #include "GB_mex.h"
 
-#define USAGE "A = GB_mex_setElement (A, I, J, X)"
-
 #define FREE_ALL                        \
 {                                       \
     GB_MATRIX_FREE (&A) ;               \
     GB_FREE_MEMORY (Xtemp, ni, sizeof (double complex)) ; \
-    GB_mx_put_global (true, 0) ;        \
+    GB_mx_put_global (malloc_debug) ;   \
 }
 
 
@@ -90,6 +88,9 @@ vsetEl (FP64   , double        ) ;
 vsetEl (UDT    , double complex) ;
 #undef  AMPERSAND
 
+
+
+
 void mexFunction
 (
     int nargout,
@@ -99,25 +100,23 @@ void mexFunction
 )
 {
 
-    bool malloc_debug = GB_mx_get_global (true) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Matrix A = NULL ;
     void *Y ;
     GrB_Type xtype ;
     void *Xtemp = NULL ;
-    GrB_Index *I = NULL, ni = 0, I_range [3] ;
-    GrB_Index *J = NULL, nj = 0, J_range [3] ;
-    bool is_list ;
+    GrB_Index *I = NULL, ni = 0 ; 
+    GrB_Index *J = NULL, nj = 0 ; 
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargout > 1 || nargin != 4)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: A = GB_mex_setElement (A, I, J, X)");
     }
 
     // get A (deep copy)
     #define GET_DEEP_COPY \
-    A = GB_mx_mxArray_to_Matrix (pargin [0], "A input", true, true) ;
+    A = GB_mx_mxArray_to_Matrix (pargin [0], "A input", true) ;
     #define FREE_DEEP_COPY GB_MATRIX_FREE (&A) ;
     GET_DEEP_COPY ;
     if (A == NULL)
@@ -128,25 +127,17 @@ void mexFunction
     mxClassID aclass = GB_mx_Type_to_classID (A->type) ;
 
     // get I
-    if (!GB_mx_mxArray_to_indices (&I, pargin [1], &ni, I_range, &is_list))
+    if (!GB_mx_mxArray_to_indices (&I, pargin [1], &ni))
     {
         FREE_ALL ;
         mexErrMsgTxt ("I failed") ;
     }
-    if (!is_list)
-    {
-        mexErrMsgTxt ("I is invalid; must be a list") ;
-    }
 
     // get J
-    if (!GB_mx_mxArray_to_indices (&J, pargin [2], &nj, J_range, &is_list))
+    if (!GB_mx_mxArray_to_indices (&J, pargin [2], &nj))
     {
         FREE_ALL ;
         mexErrMsgTxt ("J failed") ;
-    }
-    if (!is_list)
-    {
-        mexErrMsgTxt ("J is invalid; must be a list") ;
     }
 
     if (ni != nj)
@@ -203,7 +194,7 @@ void mexFunction
     // by running out of memory, it clears to whole matrix, so recovery cannot
     // be made.
 
-    if (A->vdim == 1)
+    if (A->ncols == 1)
     {
         // test GrB_Vector_setElement
         switch (xtype->code)
@@ -219,7 +210,6 @@ void mexFunction
             case GB_UINT64_code : METHOD (vset_UINT64 (A, Y, I, ni)) ; break ;
             case GB_FP32_code   : METHOD (vset_FP32   (A, Y, I, ni)) ; break ;
             case GB_FP64_code   : METHOD (vset_FP64   (A, Y, I, ni)) ; break ;
-            case GB_UCT_code    :
             case GB_UDT_code    : METHOD (vset_UDT    (A, Y, I, ni)) ; break ;
             default:
                 FREE_ALL ;
@@ -242,7 +232,6 @@ void mexFunction
             case GB_UINT64_code : METHOD (set_UINT64 (A, Y, I, J, ni)) ; break ;
             case GB_FP32_code   : METHOD (set_FP32   (A, Y, I, J, ni)) ; break ;
             case GB_FP64_code   : METHOD (set_FP64   (A, Y, I, J, ni)) ; break ;
-            case GB_UCT_code    :
             case GB_UDT_code    : METHOD (set_UDT    (A, Y, I, J, ni)) ; break ;
             default:
                 FREE_ALL ;
@@ -251,10 +240,7 @@ void mexFunction
     }
 
     // only do debug checks after adding lots of tuples
-    if (ni > 1000) ASSERT_OK (GB_check (A, "A added pending tuples", GB0)) ;
-
-    // GB_wait (A) ;
-    // if (ni > 1000) ASSERT_OK (GB_check (A, "A wiated", GB0)) ;
+    if (ni > 1000) ASSERT_OK (GB_check (A, "A added pending tuples", 0)) ;
 
     // return A to MATLAB as a struct and free the GraphBLAS A
     pargout [0] = GB_mx_Matrix_to_mxArray (&A, "A output", true) ;

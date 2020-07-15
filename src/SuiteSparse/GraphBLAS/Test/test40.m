@@ -18,16 +18,16 @@ for i = double (1:500:m)
     end
 end
 
-i2 = double (1:10:m) ;
-j2 = double (1:10:n) ;
-ni = length (i2) * length (j2) ;
+ii = double (1:10:m) ;
+jj = double (1:10:n) ;
+ni = length (ii) * length (jj) ;
 I = zeros (ni, 1) ;
 J = zeros (ni, 1) ;
 X = zeros (ni, 1) ;
 
 k = 0 ;
-for i = i2
-    for j = j2
+for i = ii
+    for j = jj
         k = k + 1 ;
         I (k) = i ;
         J (k) = j ;
@@ -36,8 +36,8 @@ end
 
 % MATLAB loop 1
 tic
-for i = i2
-    for j = j2
+for i = ii
+    for j = jj
         x1 = full (A (i,j)) ;
     end
 end

@@ -1,5 +1,5 @@
 function test61
-%TEST61 performance test of GrB_eMult
+%TEST61 test GrB_eMult performance
 
 % SuiteSparse:GraphBLAS, Timothy A. Davis, (c) 2017-2018, All Rights Reserved.
 % http://suitesparse.com   See GraphBLAS/Doc/License.txt for license.

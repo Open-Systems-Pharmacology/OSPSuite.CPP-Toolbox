@@ -14,22 +14,22 @@ GrB_Info GxB_Monoid_identity        // return the monoid identity
     void *identity,                 // returns the identity of the monoid
     const GrB_Monoid monoid         // monoid to query
 )
-{ 
+{
 
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
 
-    GB_WHERE ("GxB_Monoid_identity (&identity, monoid)") ;
-    GB_RETURN_IF_NULL (identity) ;
-    GB_RETURN_IF_NULL_OR_FAULTY (monoid) ;
-    ASSERT_OK (GB_check (monoid, "monoid for identity", GB0)) ;
+    WHERE ("GxB_Monoid_identity (&identity, monoid)") ;
+    RETURN_IF_NULL (identity) ;
+    RETURN_IF_NULL_OR_UNINITIALIZED (monoid) ;
+    ASSERT_OK (GB_check (monoid, "monoid for idenitity", 0)) ;
 
     //--------------------------------------------------------------------------
     // return the identity
     //--------------------------------------------------------------------------
 
     memcpy (identity, monoid->identity, monoid->op->ztype->size) ;
-    return (GrB_SUCCESS) ;
+    return (REPORT_SUCCESS) ;
 }
 

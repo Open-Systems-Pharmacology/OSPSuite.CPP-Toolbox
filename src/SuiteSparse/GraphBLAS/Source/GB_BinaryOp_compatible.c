@@ -19,10 +19,9 @@ GrB_Info GB_BinaryOp_compatible     // check for domain mismatch
     const GrB_Type ctype,           // C must be compatible with op->ztype
     const GrB_Type atype,           // A must be compatible with op->xtype
     const GrB_Type btype,           // B must be compatible with op->ytype
-    const GB_Type_code bcode,       // B may not have a type, just a code
-    GB_Context Context
+    const GB_Type_code bcode        // B may not have a type, just a code
 )
-{ 
+{
 
     //--------------------------------------------------------------------------
     // check inputs
@@ -38,8 +37,8 @@ GrB_Info GB_BinaryOp_compatible     // check for domain mismatch
     //--------------------------------------------------------------------------
 
     if (!GB_Type_compatible (atype, op->xtype))
-    { 
-        return (GB_ERROR (GrB_DOMAIN_MISMATCH, (GB_LOG,
+    {
+        return (ERROR (GrB_DOMAIN_MISMATCH, (LOG,
             "incompatible type for z=%s(x,y):\n"
             "first input of type [%s]\n"
             "cannot be typecast to x input of type [%s]",
@@ -53,8 +52,8 @@ GrB_Info GB_BinaryOp_compatible     // check for domain mismatch
     if (btype != NULL)
     {
         if (!GB_Type_compatible (btype, op->ytype))
-        { 
-            return (GB_ERROR (GrB_DOMAIN_MISMATCH, (GB_LOG,
+        {
+            return (ERROR (GrB_DOMAIN_MISMATCH, (LOG,
                 "incompatible type for z=%s(x,y):\n"
                 "second input of type [%s]\n"
                 "cannot be typecast to y input of type [%s]",
@@ -63,9 +62,9 @@ GrB_Info GB_BinaryOp_compatible     // check for domain mismatch
     }
     else
     {
-        if (!GB_code_compatible (bcode, op->ytype->code))
-        { 
-            return (GB_ERROR (GrB_DOMAIN_MISMATCH, (GB_LOG,
+        if (!GB_Type_code_compatible (bcode, op->ytype->code))
+        {
+            return (ERROR (GrB_DOMAIN_MISMATCH, (LOG,
                 "incompatible type for z=%s(x,y):\n"
                 "second input of type [%s]\n"
                 "cannot be typecast to y input of type [%s]",
@@ -78,14 +77,14 @@ GrB_Info GB_BinaryOp_compatible     // check for domain mismatch
     //--------------------------------------------------------------------------
 
     if (ctype != NULL && !GB_Type_compatible (ctype, op->ztype))
-    { 
-        return (GB_ERROR (GrB_DOMAIN_MISMATCH, (GB_LOG,
+    {
+        return (ERROR (GrB_DOMAIN_MISMATCH, (LOG,
             "incompatible type for z=%s(x,y):\n"
             "operator output z of type [%s]\n"
             "cannot be typecast to result of type [%s]",
             op->name, op->ztype->name, ctype->name))) ;
     }
 
-    return (GrB_SUCCESS) ;
+    return (REPORT_SUCCESS) ;
 }
 

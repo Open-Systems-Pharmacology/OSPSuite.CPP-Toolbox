@@ -13,9 +13,6 @@
 // delete them.  It does not tolerate pending tuples, so if they are present,
 // all zombies are deleted and all pending tuples are assembled.
 
-// This function does not need to know if A is hypersparse or not, and its
-// result is the same if A is in CSR or CSC format.
-
 #include "GB.h"
 
 GrB_Info GB_reduce_to_scalar    // twork = reduce_to_scalar (A)
@@ -24,8 +21,7 @@ GrB_Info GB_reduce_to_scalar    // twork = reduce_to_scalar (A)
     const GrB_Type ctype,       // the type of scalar, c
     const GrB_BinaryOp accum,   // for c = accum(c,twork)
     const GrB_Monoid reduce,    // monoid to do the reduction
-    const GrB_Matrix A,         // matrix to reduce
-    GB_Context Context
+    const GrB_Matrix A          // matrix to reduce
 )
 {
 
@@ -46,29 +42,29 @@ GrB_Info GB_reduce_to_scalar    // twork = reduce_to_scalar (A)
     // but this could be done only if the reduce monoid is the same as the
     // pending operator.
 
-    GB_WAIT_PENDING (A) ;
-    ASSERT (GB_ZOMBIES_OK (A)) ;       // Zombies are tolerated, and not deleted
-    GB_RETURN_IF_NULL_OR_FAULTY (reduce) ;
-    GB_RETURN_IF_FAULTY (accum) ;
-    GB_RETURN_IF_NULL (c) ;
+    if (PENDING (A)) APPLY_PENDING_UPDATES (A) ;
+    ASSERT (ZOMBIES_OK (A)) ;       // Zombies are tolerated, and not deleted
+    RETURN_IF_NULL_OR_UNINITIALIZED (reduce) ;
+    RETURN_IF_UNINITIALIZED (accum) ;
+    RETURN_IF_NULL (c) ;
 
-    ASSERT_OK (GB_check (ctype, "type of scalar c", GB0)) ;
-    ASSERT_OK (GB_check (reduce, "reduce for reduce_to_scalar", GB0)) ;
-    ASSERT_OK_OR_NULL (GB_check (accum, "accum for reduce_to_scalar", GB0)) ;
-    ASSERT_OK (GB_check (A, "A for reduce_to_scalar", GB0)) ;
+    ASSERT_OK (GB_check (ctype, "type of scalar c", 0)) ;
+    ASSERT_OK (GB_check (reduce, "reduce for reduce_to_scalar", 0)) ;
+    ASSERT_OK_OR_NULL (GB_check (accum, "accum for reduce_to_scalar", 0)) ;
+    ASSERT_OK (GB_check (A, "A for reduce_to_scalar", 0)) ;
 
     // check domains and dimensions for c = accum (c,twork)
     GrB_Type ztype = reduce->op->ztype ;
-    GrB_Info info = GB_compatible (ctype, NULL, NULL, accum, ztype, Context) ;
+    GrB_Info info = GB_compatible (ctype, NULL, NULL, accum, ztype) ;
     if (info != GrB_SUCCESS)
-    { 
+    {
         return (info) ;
     }
 
     // twork = reduce (twork,A) must be compatible
     if (!GB_Type_compatible (A->type, ztype))
-    { 
-        return (GB_ERROR (GrB_DOMAIN_MISMATCH, (GB_LOG,
+    {
+        return (ERROR (GrB_DOMAIN_MISMATCH, (LOG,
             "incompatible type for reduction operator z=%s(x,y):\n"
             "input of type [%s]\n"
             "cannot be typecast to reduction operator of type [%s]",
@@ -80,12 +76,13 @@ GrB_Info GB_reduce_to_scalar    // twork = reduce_to_scalar (A)
     //--------------------------------------------------------------------------
 
     int64_t asize = A->type->size ;
-    int64_t anz = GB_NNZ (A) ;
+    int64_t anz = NNZ (A) ;
     const int64_t *restrict Ai = A->i ;
 
     int64_t zsize = ztype->size ;
 
     char awork [zsize] ;
+    char wwork [zsize] ;
     char twork [zsize] ;
 
     //--------------------------------------------------------------------------
@@ -111,12 +108,10 @@ GrB_Info GB_reduce_to_scalar    // twork = reduce_to_scalar (A)
         // hard-coded below via a switch factory.  If the case is not handled
         // by the switch factory, 'done' remains false.
 
-        // FUTURE: some operators can terminate early
-
         bool done = false ;
 
         // define the worker for the switch factory
-        #define GB_WORKER(type)                                             \
+        #define WORKER(type)                                                \
         {                                                                   \
             const type *restrict Ax = (type *) A->x ;                       \
             type s ;                                                        \
@@ -126,8 +121,8 @@ GrB_Info GB_reduce_to_scalar    // twork = reduce_to_scalar (A)
                 for (int64_t p = 0 ; p < anz ; p++)                         \
                 {                                                           \
                     /* s += A(i,j) */                                       \
-                    ASSERT (GB_IS_NOT_ZOMBIE (Ai [p])) ;                    \
-                    GB_DUP (s, Ax [p]) ;                                    \
+                    ASSERT (IS_NOT_ZOMBIE (Ai [p])) ;                       \
+                    ADD (s, Ax [p]) ;                                       \
                 }                                                           \
             }                                                               \
             else                                                            \
@@ -135,7 +130,7 @@ GrB_Info GB_reduce_to_scalar    // twork = reduce_to_scalar (A)
                 for (int64_t p = 0 ; p < anz ; p++)                         \
                 {                                                           \
                     /* s += A(i,j) if the entry is not a zombie */          \
-                    if (GB_IS_NOT_ZOMBIE (Ai [p])) GB_DUP (s, Ax [p]) ;     \
+                    if (IS_NOT_ZOMBIE (Ai [p])) ADD (s, Ax [p]) ;           \
                 }                                                           \
             }                                                               \
             memcpy (twork, &s, zsize) ;                                     \
@@ -160,6 +155,8 @@ GrB_Info GB_reduce_to_scalar    // twork = reduce_to_scalar (A)
 
         #endif
 
+        #undef WORKER
+
         //----------------------------------------------------------------------
         // generic worker: sum up the entries, no typecasting
         //----------------------------------------------------------------------
@@ -167,16 +164,18 @@ GrB_Info GB_reduce_to_scalar    // twork = reduce_to_scalar (A)
         if (!done)
         {
             // the switch factory didn't handle this case
-            GxB_binary_function freduce = reduce->op->function ;
-            const GB_void *Ax = A->x ;
+            GB_binary_function freduce = reduce->op->function ;
+            const void *Ax = A->x ;
             if (A->nzombies == 0)
             {
                 for (int64_t p = 0 ; p < anz ; p++)
-                { 
+                {
                     // twork += A(i,j)
-                    ASSERT (GB_IS_NOT_ZOMBIE (Ai [p])) ;
-                    // twork += Ax [p]
-                    freduce (twork, twork, Ax +(p*asize)) ; // (z x alias)
+                    ASSERT (IS_NOT_ZOMBIE (Ai [p])) ;
+                    // wwork = twork
+                    memcpy (wwork, twork, zsize) ;
+                    // twork = wwork + Ax [p]
+                    freduce (twork, wwork, Ax +(p*asize)) ;
                 }
             }
             else
@@ -184,10 +183,12 @@ GrB_Info GB_reduce_to_scalar    // twork = reduce_to_scalar (A)
                 for (int64_t p = 0 ; p < anz ; p++)
                 {
                     // twork += A(i,j) if not a zombie
-                    if (GB_IS_NOT_ZOMBIE (Ai [p]))
-                    { 
-                        // twork += Ax [p]
-                        freduce (twork, twork, Ax +(p*asize)) ; // (z x alias)
+                    if (IS_NOT_ZOMBIE (Ai [p]))
+                    {
+                        // wwork = twork
+                        memcpy (wwork, twork, zsize) ;
+                        // twork = wwork + Ax [p]
+                        freduce (twork, wwork, Ax +(p*asize)) ;
                     }
                 }
             }
@@ -200,21 +201,23 @@ GrB_Info GB_reduce_to_scalar    // twork = reduce_to_scalar (A)
         // generic worker: sum up the entries, with typecasting
         //----------------------------------------------------------------------
 
-        GxB_binary_function freduce = reduce->op->function ;
+        GB_binary_function freduce = reduce->op->function ;
         GB_cast_function
             cast_A_to_Z = GB_cast_factory (ztype->code, A->type->code) ;
 
-        const GB_void *Ax = A->x ;
+        const void *Ax = A->x ;
         if (A->nzombies == 0)
         {
             for (int64_t p = 0 ; p < anz ; p++)
-            { 
+            {
                 // twork += (ztype) A(i,j)
-                ASSERT (GB_IS_NOT_ZOMBIE (Ai [p])) ;
+                ASSERT (IS_NOT_ZOMBIE (Ai [p])) ;
                 // awork = (ztype) Ax [p]
                 cast_A_to_Z (awork, Ax +(p*asize), zsize) ;
-                // twork += awork
-                freduce (twork, twork, awork) ; // (z x alias)
+                // wwork = twork
+                memcpy (wwork, twork, zsize) ;
+                // twork = wwork + awork
+                freduce (twork, wwork, awork) ;
             }
         }
         else
@@ -222,13 +225,14 @@ GrB_Info GB_reduce_to_scalar    // twork = reduce_to_scalar (A)
             for (int64_t p = 0 ; p < anz ; p++)
             {
                 // twork += (ztype) A(i,j) if not a zombie
-                if (GB_IS_NOT_ZOMBIE (Ai [p]))
-                { 
+                if (IS_NOT_ZOMBIE (Ai [p]))
+                {
                     // awork = (ztype) Ax [p]
                     cast_A_to_Z (awork, Ax +(p*asize), zsize) ;
-
-                    // twork += awork
-                    freduce (twork, twork, awork) ;     // (z x alias)
+                    // wwork = twork
+                    memcpy (wwork, twork, zsize) ;
+                    // twork = wwork + awork
+                    freduce (twork, wwork, awork) ;
                 }
             }
         }
@@ -242,15 +246,15 @@ GrB_Info GB_reduce_to_scalar    // twork = reduce_to_scalar (A)
     // scalars, not matrices.  There is no scalar mask.
 
     if (accum == NULL)
-    { 
+    {
         // c = (ctype) twork
         GB_cast_function
             cast_Z_to_C = GB_cast_factory (ctype->code, ztype->code) ;
         cast_Z_to_C (c, twork, ctype->size) ;
     }
     else
-    { 
-        GxB_binary_function faccum = accum->function ;
+    {
+        GB_binary_function faccum = accum->function ;
 
         GB_cast_function cast_C_to_xaccum, cast_Z_to_yaccum, cast_zaccum_to_C ;
         cast_C_to_xaccum = GB_cast_factory (accum->xtype->code, ctype->code) ;
@@ -275,6 +279,6 @@ GrB_Info GB_reduce_to_scalar    // twork = reduce_to_scalar (A)
         cast_zaccum_to_C (c, zaccum, ctype->size) ;
     }
 
-    return (GrB_SUCCESS) ;
+    return (REPORT_SUCCESS) ;
 }
 

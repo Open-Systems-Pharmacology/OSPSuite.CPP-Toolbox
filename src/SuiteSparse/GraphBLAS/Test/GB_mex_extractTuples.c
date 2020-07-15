@@ -9,13 +9,11 @@
 
 #include "GB_mex.h"
 
-#define USAGE "[I,J,X] = GB_mex_extractTuples (A, xclass)"
-
 #define FREE_ALL                        \
 {                                       \
     GB_MATRIX_FREE (&A) ;               \
     GB_FREE_MEMORY (Xtemp, nvals, sizeof (double complex)) ; \
-    GB_mx_put_global (true, 0) ;        \
+    GB_mx_put_global (malloc_debug) ;   \
 }
 
 void mexFunction
@@ -27,7 +25,7 @@ void mexFunction
 )
 {
 
-    bool malloc_debug = GB_mx_get_global (true) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Matrix A = NULL ;
     void *Y = NULL ;
     void *Xtemp = NULL ;
@@ -35,17 +33,16 @@ void mexFunction
     GrB_Index nvals = 0 ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargout > 3 || nargin < 1 || nargin > 2)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: [I,J,X] = GB_mex_extractTuples (A, xclass)") ;
     }
 
     #define GET_DEEP_COPY ;
     #define FREE_DEEP_COPY ;
 
     // get A (shallow copy)
-    A = GB_mx_mxArray_to_Matrix (pargin [0], "A input", false, true) ;
+    A = GB_mx_mxArray_to_Matrix (pargin [0], "A input", false) ;
     if (A == NULL)
     {
         FREE_ALL ;
@@ -101,7 +98,7 @@ void mexFunction
     }
 
     // [I,J,X] = find (A)
-    if (GB_VECTOR_OK (A))
+    if (A->ncols == 1)
     {
         // test extract vector methods
         GrB_Vector v = (GrB_Vector) A ;
@@ -118,9 +115,7 @@ void mexFunction
             case GB_UINT64_code : METHOD (GrB_Vector_extractTuples (I, (uint64_t *) X, &nvals, v)) ; break ;
             case GB_FP32_code   : METHOD (GrB_Vector_extractTuples (I, (float    *) X, &nvals, v)) ; break ;
             case GB_FP64_code   : METHOD (GrB_Vector_extractTuples (I, (double   *) X, &nvals, v)) ; break ;
-            case GB_UCT_code    : 
-            case GB_UDT_code    : 
-              METHOD (GrB_Vector_extractTuples (I, Xtemp, &nvals, v)) ; break ;
+            case GB_UDT_code    : METHOD (GrB_Vector_extractTuples (I, Xtemp, &nvals, v)) ; break ;
             default             : FREE_ALL ; mexErrMsgTxt ("unsupported class") ;
         }
         if (J != NULL)
@@ -143,9 +138,7 @@ void mexFunction
             case GB_UINT64_code : METHOD (GrB_Matrix_extractTuples (I, J, (uint64_t *) X, &nvals, A)) ; break ;
             case GB_FP32_code   : METHOD (GrB_Matrix_extractTuples (I, J, (float    *) X, &nvals, A)) ; break ;
             case GB_FP64_code   : METHOD (GrB_Matrix_extractTuples (I, J, (double   *) X, &nvals, A)) ; break;
-            case GB_UCT_code    :
-            case GB_UDT_code    :
-                METHOD (GrB_Matrix_extractTuples (I, J, Xtemp, &nvals, A)) ; break;
+            case GB_UDT_code    : METHOD (GrB_Matrix_extractTuples (I, J, Xtemp, &nvals, A)) ; break;
             default             : FREE_ALL ; mexErrMsgTxt ("unsupported class") ;
         }
     }

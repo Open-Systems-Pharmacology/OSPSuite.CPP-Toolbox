@@ -86,7 +86,7 @@ int main (void)
     }
 
     /* generate random uint64_t numbers */
-    double t1 ;
+    double t1, t2 ;
 
     simple_tic (tic) ;
     for (i = 0 ; i < LEN ; i++)

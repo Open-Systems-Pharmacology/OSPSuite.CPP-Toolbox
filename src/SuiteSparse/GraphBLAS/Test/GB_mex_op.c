@@ -17,17 +17,15 @@
 // are first typecasted into the x and y operand types of the op.  The output Z
 // has the same class as the z type of the op.
 
-#include "GB_mex.h"
-
-#define USAGE "Z = GB_mex_op (opname, X, Y, cover)"
-
 #define FREE_ALL                        \
 {                                       \
     if (op_ztype == Complex) GB_FREE_MEMORY (Z, nx+1, sizeof (double complex));\
     if (X_type   == Complex) GB_FREE_MEMORY (X, nx+1, sizeof (double complex));\
     if (Y_type   == Complex) GB_FREE_MEMORY (Y, ny+1, sizeof (double complex));\
-    GB_mx_put_global (do_cover, 0) ;    \
+    GB_mx_put_global (malloc_debug) ;   \
 }
+
+#include "GB_mex.h"
 
 void mexFunction
 (
@@ -43,26 +41,15 @@ void mexFunction
     int64_t nrows = 0, ncols = 0, nx = 0, ny = 0, nrows2 = 0, ncols2 = 0 ;
     size_t Y_size = 1 ;
 
-    bool do_cover = (nargin == 4) ;
-    bool malloc_debug = GB_mx_get_global (do_cover) ;
-
-    // if Y is char and cover present, treat as if nargin == 2
-    if (do_cover)
-    {
-        if (mxIsChar (pargin [2]))
-        {
-            nargin = 2 ;
-        }
-    }
+    bool malloc_debug = GB_mx_get_global ( ) ;
 
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
 
-    GB_WHERE (USAGE) ;
-    if (nargout > 1 || nargin < 2 || nargin > 4)
+    if (nargout > 1 || nargin < 2 || nargin > 3)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: Z = GB_mex_op (opname, X, Y)") ;
     }
 
     //--------------------------------------------------------------------------
@@ -91,7 +78,7 @@ void mexFunction
         op_ztype = op2->ztype ; op_zsize = op_ztype->size ;
         op_xtype = op2->xtype ; op_xsize = op_xtype->size ;
         op_ytype = op2->ytype ; op_ysize = op_ytype->size ;
-        ASSERT_OK (GB_check (op2, "binary op", GB0)) ;
+        ASSERT_OK (GB_check (op2, "binary op", 0)) ;
     }
     else
     {
@@ -106,10 +93,10 @@ void mexFunction
         op_ztype = op1->ztype ; op_zsize = op_ztype->size ;
         op_xtype = op1->xtype ; op_xsize = op_xtype->size ;
         op_ytype = NULL       ; op_ysize = 1 ;
-        ASSERT_OK (GB_check (op1, "unary op", GB0)) ;
+        ASSERT_OK (GB_check (op1, "unary op", 0)) ;
     }
 
-    ASSERT_OK (GB_check (op_ztype, "Z type", GB0)) ;
+    ASSERT_OK (GB_check (op_ztype, "Z type", 0)) ;
 
     //--------------------------------------------------------------------------
     // get X
@@ -123,7 +110,7 @@ void mexFunction
         FREE_ALL ;
         mexErrMsgTxt ("X must be numeric") ;
     }
-    ASSERT_OK (GB_check (X_type, "X type", GB0)) ;
+    ASSERT_OK (GB_check (X_type, "X type", 0)) ;
     size_t X_size = X_type->size ;
 
     if (!GB_Type_compatible (op_xtype, X_type))
@@ -152,7 +139,7 @@ void mexFunction
             FREE_ALL ;
             mexErrMsgTxt ("Y must be numeric") ;
         }
-        ASSERT_OK (GB_check (Y_type, "Y type", GB0)) ;
+        ASSERT_OK (GB_check (Y_type, "Y type", 0)) ;
         Y_size = Y_type->size ;
 
         if (!GB_Type_compatible (op_ytype, Y_type))
@@ -202,7 +189,7 @@ void mexFunction
     if (nargin > 2)
     {
         // Z = f (X,Y)
-        GxB_binary_function f_binary = op2->function ;
+        GB_binary_function f_binary = op2->function ;
 
         GB_cast_function cast_Y = GB_cast_factory (op_ytype->code,Y_type->code);
         for (int64_t k = 0 ; k < nx ; k++)
@@ -216,7 +203,7 @@ void mexFunction
     else
     {
         // Z = f (X)
-        GxB_unary_function f_unary = op1->function ;
+        GB_unary_function f_unary = op1->function ;
         for (int64_t k = 0 ; k < nx ; k++)
         {
             cast_X (xwork, X +(k*X_size), X_size) ;

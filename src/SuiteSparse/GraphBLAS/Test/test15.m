@@ -7,16 +7,12 @@ function test15
 fprintf ('\n --------------------- GB_mex_AxB, GB_mex_AdotB tests\n') ;
 
 rng ('default') ;
-m = 8 ;
-k = 6 ;
-n = 10 ;
-A = sprand (m,k,0.5) ;
-B = sprand (k,n,0.5) ;
+A = sprand (4,3,0.5) ;
+B = sprand (3,5,0.5) ;
 C1 = A*B ;
 C = GB_mex_AxB (A, B) ;
 assert (spok (C) == 1) ;
-assert (norm (C-C1,1) / norm (C,1)< 1e-12) ;
-
+assert (isequal (C, C1)) ;
 
 A = A' ;
 C1 = A'*B ;

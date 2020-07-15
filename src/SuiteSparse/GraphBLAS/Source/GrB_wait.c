@@ -33,25 +33,23 @@ GrB_Info GrB_wait ( )       // finish all pending computations
     // check inputs
     //--------------------------------------------------------------------------
 
-    GB_WHERE ("GrB_wait ( )") ;
+    WHERE ("GrB_wait ( )") ;
 
     //--------------------------------------------------------------------------
     // assemble all matrices with lingering zombies and/or pending tuples
     //--------------------------------------------------------------------------
 
-    GrB_Matrix A = NULL ;
-    while (true)
-    { 
-        GB_CRITICAL (GB_queue_remove_head (&A)) ;
-        if (A == NULL) break ;
+    GrB_Matrix A ;
+    while ((A = GB_queue_remove_head ( )) != NULL)
+    {
         // A has been removed from the head of the queue but it still has
         // pending operations.  GB_check expects it to be in the queue.
-        // ASSERT_OK (GB_check (A, "to assemble in GrB_wait", GB0)) ;
-        ASSERT (GB_PENDING (A) || GB_ZOMBIES (A)) ;
+        // ASSERT_OK (GB_check (A, "to assemble in GrB_wait", 0)) ;
+        ASSERT (PENDING (A) || ZOMBIES (A)) ;
         // delete any lingering zombies and assemble any pending tuples.
-        GB_WAIT (A) ;
+        APPLY_PENDING_UPDATES (A) ;
     }
 
-    return (GrB_SUCCESS) ;
+    return (REPORT_SUCCESS) ;
 }
 

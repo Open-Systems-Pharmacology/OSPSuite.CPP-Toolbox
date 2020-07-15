@@ -9,9 +9,7 @@
  * Mongoose is also available under other licenses; contact authors for details.
  * -------------------------------------------------------------------------- */
 
-// #pragma once
-#ifndef MONGOOSE_BOUNDARYHEAP_HPP
-#define MONGOOSE_BOUNDARYHEAP_HPP
+#pragma once
 
 #include "Mongoose_EdgeCutOptions.hpp"
 #include "Mongoose_EdgeCutProblem.hpp"
@@ -34,5 +32,3 @@ void heapifyDown(EdgeCutProblem *, Int *bhHeap, Int size, double *gains, Int ver
                  Int position, double gain);
 
 } // end namespace Mongoose
-
-#endif

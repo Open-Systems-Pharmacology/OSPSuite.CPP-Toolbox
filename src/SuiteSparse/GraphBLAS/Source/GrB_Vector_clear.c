@@ -13,20 +13,21 @@ GrB_Info GrB_Vector_clear   // clear a vector of all entries;
 (                           // type and dimension remain unchanged
     GrB_Vector v            // vector to clear
 )
-{ 
+{
 
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
 
-    GB_WHERE ("GrB_Vector_clear (v)") ;
-    GB_RETURN_IF_NULL_OR_FAULTY (v) ;
-    ASSERT (GB_VECTOR_OK (v)) ;
+    WHERE ("GrB_Vector_clear (v)") ;
+    RETURN_IF_NULL_OR_UNINITIALIZED (v) ;
 
     //--------------------------------------------------------------------------
-    // clear the vector (but keep the v->Sauna)
+    // clear the vector
     //--------------------------------------------------------------------------
 
-    return (GB_clear ((GrB_Matrix) v, Context)) ;
+    GB_Matrix_clear ((GrB_Matrix) v) ;
+
+    return (REPORT_SUCCESS) ;
 }
 

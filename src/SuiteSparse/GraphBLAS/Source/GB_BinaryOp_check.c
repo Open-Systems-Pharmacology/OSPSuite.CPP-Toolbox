@@ -13,23 +13,22 @@ GrB_Info GB_BinaryOp_check  // check a GraphBLAS binary operator
 (
     const GrB_BinaryOp op,  // GraphBLAS operator to print and check
     const char *name,       // name of the operator
-    int pr,                 // 0: print nothing, 1: print header and errors,
+    const GB_diagnostic pr  // 0: print nothing, 1: print header and errors,
                             // 2: print brief, 3: print all
-    FILE *f,                // file for output
-    GB_Context Context
 )
-{ 
+{
+
 
     //--------------------------------------------------------------------------
     // check inputs
     //--------------------------------------------------------------------------
 
-    if (pr > 0) GBPR ("\nGraphBLAS BinaryOp: %s ", GB_NAME) ;
+    if (pr > 0) printf ("\nGraphBLAS BinaryOp: %s ", NAME) ;
 
     if (op == NULL)
-    { 
+    {
         // GrB_error status not modified since this may be an optional argument
-        if (pr > 0) GBPR ("NULL\n") ;
+        if (pr > 0) printf ("NULL\n") ;
         return (GrB_NULL_POINTER) ;
     }
 
@@ -37,67 +36,52 @@ GrB_Info GB_BinaryOp_check  // check a GraphBLAS binary operator
     // check object
     //--------------------------------------------------------------------------
 
-    GB_CHECK_MAGIC (op, "BinaryOp") ;
+    CHECK_MAGIC (op, "BinaryOp") ;
 
-    if (pr > 0)
-    { 
-        if (op->opcode == GB_USER_C_opcode)
-        {
-            GBPR ("(compile-time user-defined) ") ;
-        }
-        else if (op->opcode == GB_USER_R_opcode)
-        {
-            GBPR ("(run-time user-defined) ") ;
-        }
-        else
-        {
-            GBPR ("(built-in) ") ;
-        }
-    }
+    if (pr > 0 && op->opcode == GB_USER_opcode) printf ("user-defined: ") ;
 
-    if (pr > 0) GBPR ("z=%s(x,y)\n", op->name) ;
+    if (pr > 0) printf ("z=%s(x,y)\n", op->name) ;
 
     if (op->function == NULL)
-    { 
-        if (pr > 0) GBPR ("BinaryOp has a NULL function pointer\n") ;
-        return (GB_ERROR (GrB_INVALID_OBJECT, (GB_LOG,
-            "BinaryOp has a NULL function pointer: %s [%s]",
-            GB_NAME, op->name))) ;
+    {
+        if (pr > 0) printf ("BinaryOp has a NULL function pointer\n") ;
+        return (ERROR (GrB_INVALID_OBJECT, (LOG,
+            "BinaryOp has a NULL function pointer: %s [%s]", NAME, op->name))) ;
     }
 
-    if (op->opcode < GB_FIRST_opcode || op->opcode > GB_USER_R_opcode)
-    { 
-        if (pr > 0) GBPR ("BinaryOp has an invalid opcode\n") ;
-        return (GB_ERROR (GrB_INVALID_OBJECT, (GB_LOG,
-            "BinaryOp has an invalid opcode: %s [%s]", GB_NAME, op->name))) ;
+    if (op->opcode < GB_FIRST_opcode || op->opcode > GB_USER_opcode)
+    {
+        if (pr > 0) printf ("BinaryOp has an invalid opcode\n") ;
+        return (ERROR (GrB_INVALID_OBJECT, (LOG,
+            "BinaryOp has an invalid opcode: %s [%s]", NAME, op->name))) ;
     }
 
     GrB_Info info ;
 
-    info = GB_Type_check (op->ztype, "ztype", pr, f, Context) ;
+    info = GB_Type_check (op->ztype, "ztype", pr) ;
     if (info != GrB_SUCCESS)
-    { 
-        if (pr > 0) GBPR ("BinaryOp has an invalid ztype\n") ;
-        return (GB_ERROR (GrB_INVALID_OBJECT, (GB_LOG,
-            "BinaryOp has an invalid ztype: %s [%s]", GB_NAME, op->name))) ;
+    {
+        if (pr > 0) printf ("BinaryOp has an invalid ztype\n") ;
+        return (ERROR (GrB_INVALID_OBJECT, (LOG,
+            "BinaryOp has an invalid ztype: %s [%s]", NAME, op->name))) ;
     }
 
-    info = GB_Type_check (op->xtype, "xtype", pr, f, Context) ;
+    info = GB_Type_check (op->xtype, "xtype", pr) ;
     if (info != GrB_SUCCESS)
-    { 
-        if (pr > 0) GBPR ("BinaryOp has an invalid xtype\n") ;
-        return (GB_ERROR (GrB_INVALID_OBJECT, (GB_LOG,
-            "BinaryOp has an invalid xtype: %s [%s]", GB_NAME, op->name))) ;
+    {
+        if (pr > 0) printf ("BinaryOp has an invalid xtype\n") ;
+        return (ERROR (GrB_INVALID_OBJECT, (LOG,
+            "BinaryOp has an invalid xtype: %s [%s]", NAME, op->name))) ;
     }
 
-    info = GB_Type_check (op->ytype, "ytype", pr, f, Context) ;
+    info = GB_Type_check (op->ytype, "ytype", pr) ;
     if (info != GrB_SUCCESS)
-    { 
-        if (pr > 0) GBPR ("BinaryOp has an invalid ytype\n") ;
-        return (GB_ERROR (GrB_INVALID_OBJECT, (GB_LOG,
-            "BinaryOp has an invalid ytype: %s [%s]", GB_NAME, op->name))) ;
+    {
+        if (pr > 0) printf ("BinaryOp has an invalid ytype\n") ;
+        return (ERROR (GrB_INVALID_OBJECT, (LOG,
+            "BinaryOp has an invalid ytype: %s [%s]", NAME, op->name))) ;
     }
 
-    return (GrB_SUCCESS) ;
+    return (GrB_SUCCESS) ; // not REPORT_SUCCESS; may mask error in caller
 }
 

@@ -55,8 +55,6 @@ endif
 VERNUM=5.1.0
 PKGNAME=metis-$(VERNUM)
 
-JOBS ?= 1
-
 define run-config
 mkdir -p $(BUILDDIR)
 cd $(BUILDDIR) && cmake $(CURDIR) $(CONFIG_FLAGS)
@@ -66,7 +64,7 @@ all clean install:
 	@if [ ! -f $(BUILDDIR)/Makefile ]; then \
 		more BUILD.txt; \
 	else \
-	  	make --jobs=$(JOBS) -C $(BUILDDIR) $@ ; \
+	  	make -C $(BUILDDIR) $@ $(MAKEFLAGS); \
 	fi
 
 uninstall:

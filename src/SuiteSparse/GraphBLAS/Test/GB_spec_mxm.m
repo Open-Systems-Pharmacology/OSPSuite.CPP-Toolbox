@@ -61,7 +61,7 @@ C = GB_spec_matrix (C, identity) ;
 A = GB_spec_matrix (A, identity) ;
 B = GB_spec_matrix (B, identity) ;
 % Mask is a dense logical matrix, not a struct
-Mask = GB_spec_getmask (Mask) ;
+Mask = GB_mex_cast (full (Mask), 'logical') ;
 [C_replace Mask_comp Atrans Btrans] = GB_spec_descriptor (descriptor) ;
 
 %-------------------------------------------------------------------------------
@@ -106,3 +106,4 @@ end
 
 % C<Mask> = accum (C,T): apply the accum, then Mask, and return the result
 C = GB_spec_accum_mask (C, Mask, accum, T, C_replace, Mask_comp, identity) ;
+

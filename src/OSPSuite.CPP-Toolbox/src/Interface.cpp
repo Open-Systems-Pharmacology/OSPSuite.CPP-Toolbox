@@ -14,7 +14,13 @@ void setOutputPtr(int(*outputPtr)(const char*, ...)) {
 }
 
 unsigned int initSimulation(const unsigned int index, const char * name ) {
-    SimInterface* sim = new SimInterface(std::string(name), SimInterface::SPARSE_KLU);//DENSE_FD, DENSE_CPP, SPARSE_KLU
+#ifdef DER_KLU
+	auto jacobianType = SimInterface::SPARSE_KLU;
+#else
+	auto jacobianType = SimInterface::DENSE_CPP;
+#endif
+
+    SimInterface* sim = new SimInterface(std::string(name), jacobianType);//DENSE_FD, DENSE_CPP, SPARSE_KLU
 
     if(sim->getErrorFlag()<0) {
 //        if(SimInterface::getDimModels!=nullptr) {

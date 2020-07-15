@@ -22,7 +22,7 @@ C = GB_spec_matrix (C) ;
 A = GB_spec_matrix (A) ;
 B = GB_spec_matrix (B) ;
 [mult_op xyclass zclass] = GB_spec_operator (mult, C.class) ;
-Mask = GB_spec_getmask (Mask) ;
+Mask = GB_mex_cast (full (Mask), 'logical') ;
 [C_replace Mask_comp Atrans Btrans] = GB_spec_descriptor (descriptor) ;
 
 %-------------------------------------------------------------------------------

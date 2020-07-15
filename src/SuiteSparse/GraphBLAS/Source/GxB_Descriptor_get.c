@@ -7,8 +7,6 @@
 
 //------------------------------------------------------------------------------
 
-// Use GxB_Desc_get instead; this is kept for backward compatibility.
-
 #include "GB.h"
 
 GrB_Info GxB_Descriptor_get     // get a parameter from a descriptor
@@ -23,9 +21,9 @@ GrB_Info GxB_Descriptor_get     // get a parameter from a descriptor
     // check inputs
     //--------------------------------------------------------------------------
 
-    GB_WHERE ("GxB_Descriptor_get (&value, desc, field)") ;
-    GB_RETURN_IF_NULL (val) ;
-    GB_RETURN_IF_FAULTY (desc) ;
+    WHERE ("GxB_Descriptor_get (&value, desc, field)") ;
+    RETURN_IF_NULL (val) ;
+    RETURN_IF_UNINITIALIZED (desc) ;
 
     //--------------------------------------------------------------------------
     // get the parameter
@@ -33,31 +31,15 @@ GrB_Info GxB_Descriptor_get     // get a parameter from a descriptor
 
     switch (field)
     {
-        case GrB_OUTP : 
-
-            (*val) = (desc == NULL) ? GxB_DEFAULT : desc->out  ; break ;
-
-        case GrB_MASK : 
-
-            (*val) = (desc == NULL) ? GxB_DEFAULT : desc->mask ; break ;
-
-        case GrB_INP0 : 
-
-            (*val) = (desc == NULL) ? GxB_DEFAULT : desc->in0  ; break ;
-        case GrB_INP1 : 
-
-            (*val) = (desc == NULL) ? GxB_DEFAULT : desc->in1  ; break ;
-
-        case GxB_AxB_METHOD : 
-
-            (*val) = (desc == NULL) ? GxB_DEFAULT : desc->axb  ; break;
-
-        default : 
-
-            return (GB_ERROR (GrB_INVALID_VALUE, (GB_LOG,
+        case GrB_OUTP: (*val) = (desc==NULL) ? GxB_DEFAULT : desc->out  ; break;
+        case GrB_MASK: (*val) = (desc==NULL) ? GxB_DEFAULT : desc->mask ; break;
+        case GrB_INP0: (*val) = (desc==NULL) ? GxB_DEFAULT : desc->in0  ; break;
+        case GrB_INP1: (*val) = (desc==NULL) ? GxB_DEFAULT : desc->in1  ; break;
+        default:
+            return (ERROR (GrB_INVALID_VALUE, (LOG,
                 "invalid descriptor field"))) ;
     }
 
-    return (GrB_SUCCESS) ;
+    return (REPORT_SUCCESS) ;
 }
 

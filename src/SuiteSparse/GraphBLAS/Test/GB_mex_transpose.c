@@ -9,18 +9,16 @@
 
 // C<Mask> = accum (C,A') or accum (C,A)
 
-#include "GB_mex.h"
-
-#define USAGE "C = GB_mex_transpose (C, Mask, accum, A, desc)"
-
 #define FREE_ALL                        \
 {                                       \
     GB_MATRIX_FREE (&A) ;               \
     GB_MATRIX_FREE (&C) ;               \
     GB_MATRIX_FREE (&Mask) ;            \
     GrB_free (&desc) ;                  \
-    GB_mx_put_global (true, 0) ;        \
+    GB_mx_put_global (malloc_debug) ;   \
 }
+
+#include "GB_mex.h"
 
 void mexFunction
 (
@@ -30,25 +28,22 @@ void mexFunction
     const mxArray *pargin [ ]
 )
 {
-    // double tic2 [2] ;
-    // simple_tic (tic2) ;
 
-    bool malloc_debug = GB_mx_get_global (true) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Matrix A = NULL ;
     GrB_Matrix C = NULL ;
     GrB_Matrix Mask = NULL ;
     GrB_Descriptor desc = NULL ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargout > 1 || nargin < 4 || nargin > 5)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: C = GB_mex_transpose (C, Mask, accum, A, desc)");
     }
 
     // get C (make a deep copy)
     #define GET_DEEP_COPY \
-    C = GB_mx_mxArray_to_Matrix (pargin [0], "C input", true, true) ;
+    C = GB_mx_mxArray_to_Matrix (pargin [0], "C input", true) ;
     #define FREE_DEEP_COPY GB_MATRIX_FREE (&C) ;
     GET_DEEP_COPY ;
     if (C == NULL)
@@ -59,7 +54,7 @@ void mexFunction
     mxClassID cclass = GB_mx_Type_to_classID (C->type) ;
 
     // get Mask (shallow copy)
-    Mask = GB_mx_mxArray_to_Matrix (pargin [1], "Mask", false, false) ;
+    Mask = GB_mx_mxArray_to_Matrix (pargin [1], "Mask", false) ;
     if (Mask == NULL && !mxIsEmpty (pargin [1]))
     {
         FREE_ALL ;
@@ -67,7 +62,7 @@ void mexFunction
     }
 
     // get A (shallow copy)
-    A = GB_mx_mxArray_to_Matrix (pargin [3], "A input", false, true) ;
+    A = GB_mx_mxArray_to_Matrix (pargin [3], "A input", false) ;
     if (A == NULL)
     {
         FREE_ALL ;
@@ -90,19 +85,12 @@ void mexFunction
         mexErrMsgTxt ("desc failed") ;
     }
 
-    // printf ("time so far: %g\n", simple_toc (tic2)) ;
-    // simple_tic (tic2) ;
-
     // C<Mask> = op(C,A') or op(C,A)
     METHOD (GrB_transpose (C, Mask, accum, A, desc)) ;
-
-    // printf ("time method: %g\n", simple_toc (tic2)) ;
-    // simple_tic (tic2) ;
 
     // return C to MATLAB as a struct and free the GraphBLAS C
     pargout [0] = GB_mx_Matrix_to_mxArray (&C, "C output", true) ;
 
     FREE_ALL ;
-    // printf ("time wrapup: %g\n", simple_toc (tic2)) ;
 }
 

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// GraphBLAS/Demo/Source/wathen.c: a finite-element matrix on a regular mesh
+// GraphBLAS/Demo/wathen.c: a finite-element matrix on a regular mesh
 //------------------------------------------------------------------------------
 
 #include "demos.h"
@@ -349,9 +349,6 @@ GrB_Info wathen             // construct a random Wathen matrix
         }
         break ;
 
-        default:
-            CHECK (false, GrB_INVALID_VALUE) ;
-            break ;
     }
 
     //--------------------------------------------------------------------------
@@ -372,9 +369,9 @@ GrB_Info wathen             // construct a random Wathen matrix
         for (int64_t i = 0 ; i < n ; i++)
         {
             // D (i,i) = 1 / A (i,i) ;
-            double di ;
-            OK (GrB_Matrix_extractElement (&di, A, i, i)) ;
-            OK (GrB_Matrix_setElement (D, 1/di, i, i)) ;
+            double dii ;
+            OK (GrB_Matrix_extractElement (&dii, A, i, i)) ;
+            OK (GrB_Matrix_setElement (D, 1/dii, i, i)) ;
         }
         // A = D*A
         OK (GrB_mxm (A, NULL, NULL, GxB_PLUS_TIMES_FP64, D, A, NULL)) ;
@@ -393,4 +390,9 @@ GrB_Info wathen             // construct a random Wathen matrix
     FREE_ALL ;
     return (GrB_SUCCESS) ;
 }
+
+#undef FREE_ALL
+#undef d
+#undef RHO
+#undef em
 

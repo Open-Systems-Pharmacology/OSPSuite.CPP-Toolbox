@@ -1,18 +1,10 @@
-function test53(fulltests)
+function test53
 %TEST53 test GrB_Matrix_extract
 
 % SuiteSparse:GraphBLAS, Timothy A. Davis, (c) 2017-2018, All Rights Reserved.
 % http://suitesparse.com   See GraphBLAS/Doc/License.txt for license.
 
-if (nargin < 1)
-    fulltests = 0 ;
-end
-
-if (fulltests)
-    fprintf ('\n==== exhaustive test for GrB_Matrix_extract:\n') ;
-else
-    fprintf ('\n==== quick test for GrB_Matrix_extract:\n') ;
-end
+fprintf ('\n==== exhaustive test for GrB_Matrix_extract:\n') ;
 
 [ops unary_ops add_ops classes] = GB_spec_opsall ;
 
@@ -64,14 +56,8 @@ for k0 = 1:size (problems,1) ;
     fprintf ('\nnrows: %d ncols %d nnz %d ymin %g ymax %g\n', ...
         nrows, ncols, nnz, min (Y), max (Y)) ;
 
-    if (fulltests)
-        k1_list = [1:length(classes)] ;
-    else
-        k1_list = 11 ;
-    end
-
     % try every class for A
-    for k1 = k1_list % 1:length(classes)
+    for k1 = 1:length (classes)
         aclass = classes {k1} ;
         A.class = aclass ;
         Cempty.class = aclass ;
@@ -125,39 +111,21 @@ for k0 = 1:size (problems,1) ;
             assert (isequal (C.matrix .* Mask', (A.matrix') .* Mask')) ;
         end
 
-        if (fulltests)
-            k2_list = [1:length(classes)] ;
-        else
-            k2_list = unique ([11 irand(2,length(classes),1,1)]) ;
-        end
-
         % try every class for Cin
-        for k2 = k2_list
+        for k2 = 1:length (classes)
             cinclass = classes {k2} ;
             Cin2.class = cinclass ;
             Cin.class = cinclass ;
 
             fprintf ('%s', cinclass) ;
 
-            if (fulltests)
-                k3_list = 1:length (ops) ;
-            else
-                k3_list = unique ([1 5 irand(2,length(ops),1,1)]) ;
-            end
-
             % try every operator
-            for k3 = k3_list
+            for k3 = 1:length (ops)
                 op = ops {k3} ;
                 fprintf ('.') ;
 
-                if (fulltests)
-                    k4_list = [1:length(classes)] ;
-                else
-                    k4_list = unique ([11 irand(2,length(classes),1,1)]) ;
-                end
-
                 % try every operator class
-                for k4 = k4_list
+                for k4 = 1:length (classes)
                     opclass = classes {k4} ;
 
                     clear accum
@@ -224,11 +192,6 @@ for k0 = 1:size (problems,1) ;
                             Csub2.matrix  = Cin2.matrix  (1:nj,1:ni) ;
                             Csub2.class   = Cin2.class ;
 
-                            for A_is_hyper = 0:1
-                            for A_is_csc   = 0:1
-                            A.is_hyper = A_is_hyper ;
-                            A.is_csc   = A_is_csc   ;
-
                             % C = op (Csub,A(I,J))
                             C = GB_mex_Matrix_extract  (Csub, [ ], accum, ...
                                 A, I-1, J-1, [ ]) ;
@@ -243,10 +206,7 @@ for k0 = 1:size (problems,1) ;
                                 assert (false)
                             end
 
-                            A_is_vector = (size (A.matrix,2) == 1 && ...
-                                isequal (J, 1) && A.is_csc && ~A.is_hyper) ;
-
-                            if (A_is_vector)
+                            if (size (A.matrix,2) == 1 && isequal (J, 1))
                                 % A is a column vector; test Vector_extract
                                 % C = op (Csub,A(I,1))
                                 C = GB_mex_Vector_extract  (Csub, [ ], ...
@@ -279,7 +239,6 @@ for k0 = 1:size (problems,1) ;
                             % C = op (Csub,A(J,I)')
                             clear D
                             D = struct ('inp0', 'tran') ;
-
                             C = GB_mex_Matrix_extract  (Csub2, [ ], accum,  ...
                                 A, J-1, I-1, D) ;
                             assert (spok (C.matrix*1) == 1) ;
@@ -326,7 +285,7 @@ for k0 = 1:size (problems,1) ;
                                     full (double (C.matrix)), ...
                                     double (S.matrix))) ;
 
-                                if (A_is_vector)
+                                if (size (A.matrix,2) == 1 && isequal (J, 1))
                                     % A is a column vector; test Vector_extract
                                     % C = op (Csub,A(I,1))
                                     C = GB_mex_Vector_extract  (Csub, Msub, ...
@@ -384,11 +343,8 @@ for k0 = 1:size (problems,1) ;
                                         full (double (C.matrix)), ...
                                         double (S.matrix))) ;
                                 end
-                            end
 
                             end
-                            end
-
                         end
                     end
                 end

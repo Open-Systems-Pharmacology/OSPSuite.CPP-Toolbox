@@ -9,8 +9,6 @@
 
 #include "GB_mex.h"
 
-#define USAGE "J = qsort (I)"
-
 void mexFunction
 (
     int nargout,
@@ -19,19 +17,14 @@ void mexFunction
     const mxArray *pargin [ ]
 )
 {
-
-    // check inputs
-    GB_WHERE (USAGE) ;
     if (nargin != 1)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: J = qsort (I)") ;
     }
-
     if (!mxIsClass (pargin [0], "int64"))
     {
         mexErrMsgTxt ("I must be a int64 array") ;
     }
-
     int64_t *I = mxGetData (pargin [0]) ;
     int64_t n = (uint64_t) mxGetNumberOfElements (pargin [0]) ;
 
@@ -39,11 +32,6 @@ void mexFunction
     int64_t *J = mxGetData (pargout [0]) ;
     memcpy (J, I, n * sizeof (int64_t)) ;
 
-    TIC ;
-
     GB_qsort_1 (J, n) ;
-
-    TOC ;
-    GB_mx_put_time (0) ;
 }
 

@@ -9,9 +9,7 @@
  * Mongoose is also available under other licenses; contact authors for details.
  * -------------------------------------------------------------------------- */
 
-// #pragma once
-#ifndef MONGOOSE_QPNAPSACK_HPP
-#define MONGOOSE_QPNAPSACK_HPP
+#pragma once
 
 #include "Mongoose_Internal.hpp"
 
@@ -34,5 +32,3 @@ double QPNapsack    /* return the final lambda */
      double tol);
 
 } // end namespace Mongoose
-
-#endif

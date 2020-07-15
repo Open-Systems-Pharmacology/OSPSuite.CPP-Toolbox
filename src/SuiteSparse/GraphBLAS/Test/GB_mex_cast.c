@@ -13,8 +13,6 @@
 
 #include "GB_mex.h"
 
-#define USAGE "C = GB_mex_cast (X, classname, cover)"
-
 void mexFunction
 (
     int nargout,
@@ -23,21 +21,12 @@ void mexFunction
     const mxArray *pargin [ ]
 )
 {
-
-    // do not get coverage counts unless the 3rd arg is present
-    bool do_cover = (nargin == 3) ;
-    bool malloc_debug = GB_mx_get_global (do_cover) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
-    if (nargout > 2 || nargin < 1 || nargin > 3)
+    if (nargout > 2 || nargin < 1 || nargin > 2)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
-    }
-
-    if (mxIsSparse (pargin [0]))
-    {
-        mexErrMsgTxt ("X must be dense") ;
+        mexErrMsgTxt ("Usage: C = GB_mex_cast (X, classname)") ;
     }
 
     // get X
@@ -81,6 +70,6 @@ void mexFunction
         // X is a shallow copy that must not be freed
     }
 
-    GB_mx_put_global (do_cover, 0) ;
+    GB_mx_put_global (malloc_debug) ;
 }
 

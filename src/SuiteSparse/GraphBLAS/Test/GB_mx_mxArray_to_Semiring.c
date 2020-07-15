@@ -27,6 +27,8 @@
 
 // Only built-in GraphBLAS types and operators are supported.
 
+// See Source/GB_AxB_builtin.c for a description.
+
 #include "GB_mex.h"
 
 bool GB_mx_mxArray_to_Semiring         // true if successful
@@ -124,7 +126,7 @@ bool GB_mx_mxArray_to_Semiring         // true if successful
             return (false) ;
     }
 
-    ASSERT_OK (GB_check (multiply, "semiring multiply", GB0)) ;
+    ASSERT_OK (GB_check (multiply, "semiring multiply", 0)) ;
 
     // find the corresponding built-in GraphBLAS add operator
     GB_Opcode add_opcode ;
@@ -150,8 +152,8 @@ bool GB_mx_mxArray_to_Semiring         // true if successful
         return (false) ;
     }
 
-    ASSERT_OK (GB_check (add, "semiring add", GB0)) ;
-    ASSERT_OK (GB_check (multiply, "semiring multiply", GB0)) ;
+    ASSERT_OK (GB_check (add, "semiring add", 0)) ;
+    ASSERT_OK (GB_check (multiply, "semiring multiply", 0)) ;
 
     // create the monoid with the add operator and its identity value
     GrB_Monoid monoid = GB_mx_builtin_monoid (add) ;
@@ -169,7 +171,7 @@ bool GB_mx_mxArray_to_Semiring         // true if successful
         return (false) ;
     }
 
-    ASSERT_OK (GB_check (semiring, "semiring", GB0)) ;
+    ASSERT_OK (GB_check (semiring, "semiring", 0)) ;
 
     (*handle) = semiring ;
     return (true) ;

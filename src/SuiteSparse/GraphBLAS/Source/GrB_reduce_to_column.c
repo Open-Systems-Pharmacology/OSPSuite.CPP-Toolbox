@@ -9,7 +9,7 @@
 
 #include "GB.h"
 
-#define GB_REDUCE(kind,reduceop)                                              \
+#define REDUCE(kind,reduceop)                                                 \
 GrB_Info GrB_Matrix_reduce_ ## kind /* w<mask> = accum (w,reduce(A))       */ \
 (                                                                             \
     GrB_Vector w,                   /* input/output vector for results     */ \
@@ -20,13 +20,14 @@ GrB_Info GrB_Matrix_reduce_ ## kind /* w<mask> = accum (w,reduce(A))       */ \
     const GrB_Descriptor desc       /* descriptor for w, mask, and A       */ \
 )                                                                             \
 {                                                                             \
-    GB_WHERE ("GrB_Matrix_reduce_" GB_STR(kind)                               \
-        " (w, mask, accum, reduce, A, desc)") ;                               \
-    GB_RETURN_IF_NULL_OR_FAULTY (reduce) ;                                    \
+    WHERE ("GrB_Matrix_reduce_" GB_STR(kind) " (w, mask, accum, reduce, A, desc)") ; \
+    RETURN_IF_NULL_OR_UNINITIALIZED (reduce) ;                                \
     return (GB_reduce_to_column ((GrB_Matrix) w, (GrB_Matrix) mask, accum,    \
-        reduceop, A, desc, Context)) ;                                        \
+        reduceop, A, desc)) ;                                                 \
 }
 
-GB_REDUCE (BinaryOp, reduce    )
-GB_REDUCE (Monoid  , reduce->op)
+REDUCE (BinaryOp, reduce    ) ;
+REDUCE (Monoid  , reduce->op) ;
+
+#undef REDUCE
 

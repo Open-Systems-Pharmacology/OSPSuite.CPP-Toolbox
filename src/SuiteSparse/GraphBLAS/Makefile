@@ -10,20 +10,13 @@
 # simple Makefile for GraphBLAS, relies on cmake to do the actual build.  Use
 # the CMAKE_OPTIONS argument to this Makefile to pass options to cmake.
 
-JOBS ?= 1
-
 # build the GraphBLAS library (static and dynamic) and run a quick test
 default:
-	( cd build ; cmake $(CMAKE_OPTIONS) .. ; $(MAKE) --jobs=$(JOBS) ; cd ../Demo ; ./demo )
+	( cd build ; cmake $(CMAKE_OPTIONS) .. ; $(MAKE) ; cd ../Demo ; ./demo )
 
 # just build the static and dynamic libraries; do not run the demo
 library:
-	echo $(JOBS)
-	( cd build ; cmake $(CMAKE_OPTIONS) .. ; $(MAKE) --jobs=$(JOBS) )
-
-# just run cmake; do not compile
-cmake:
-	( cd build ; cmake $(CMAKE_OPTIONS) .. ; )
+	( cd build ; cmake $(CMAKE_OPTIONS) .. ; $(MAKE) )
 
 # the same as "make library"
 static: library
@@ -31,7 +24,7 @@ static: library
 # installs GraphBLAS to the install location defined by cmake, usually
 # /usr/local/lib and /usr/local/include
 install:
-	( cd build ; $(MAKE) install )
+	( cd build ; cmake $(CMAKE_OPTIONS) .. ; $(MAKE) ; $(MAKE) install )
 
 # create the Doc/GraphBLAS_UserGuide.pdf
 docs:
@@ -48,7 +41,6 @@ purge: distclean
 # remove all files not in the distribution
 distclean:
 	rm -rf build/* Demo/*_demo.out Demo/complex_demo_out.m Tcov/log.txt
-	rm -rf Config/*.tmp Source/control.m4
 	( cd Test ; $(MAKE) distclean )
 	( cd Tcov ; $(MAKE) distclean )
 	( cd Doc  ; $(MAKE) distclean )

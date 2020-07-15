@@ -22,19 +22,17 @@
 
 #include "GB_mex.h"
 
-#define USAGE "C = GB_mex_assign (C,Mask,accum,A,I,J,desc,kind) or (C, Work)"
-
 #define FREE_ALL                        \
 {                                       \
     GB_MATRIX_FREE (&A) ;               \
     GB_MATRIX_FREE (&Mask) ;            \
     GB_MATRIX_FREE (&C) ;               \
     GrB_free (&desc) ;                  \
-    GB_mx_put_global (true, 0) ;        \
+    GB_mx_put_global (malloc_debug) ;   \
 }
 
 #define GET_DEEP_COPY \
-    C = GB_mx_mxArray_to_Matrix (pargin [0], "C input", true, true) ;
+    C = GB_mx_mxArray_to_Matrix (pargin [0], "C input", true) ;
 
 #define FREE_DEEP_COPY GB_MATRIX_FREE (&C) ;
 
@@ -43,9 +41,8 @@ GrB_Matrix Mask = NULL ;
 GrB_Matrix A = NULL ;
 GrB_Descriptor desc = NULL ;
 GrB_BinaryOp accum = NULL ;
-GrB_Index *I = NULL, ni = 0, I_range [3] ;
-GrB_Index *J = NULL, nj = 0, J_range [3] ;
-bool ignore ;
+GrB_Index *I = NULL, ni ;
+GrB_Index *J = NULL, nj ;
 bool malloc_debug = false ;
 GrB_Info info = GrB_SUCCESS ;
 int kind = 0 ;
@@ -68,14 +65,11 @@ GrB_Info assign ( )
     bool at = (desc != NULL && desc->in0 == GrB_TRAN) ;
     GrB_Info info ;
 
-    int pr = 0 ;
-    bool ph = (pr > 0) ;
-
-    ASSERT_OK (GB_check (C, "C for GB_mex_assign", pr)) ;
-    ASSERT_OK_OR_NULL (GB_check (Mask, "Mask for GB_mex_assign", pr)) ;
-    ASSERT_OK (GB_check (A, "A for GB_mex_assign", pr)) ;
-    ASSERT_OK_OR_NULL (GB_check (accum, "accum for GB_mex_assign", pr)) ;
-    ASSERT_OK_OR_NULL (GB_check (desc, "desc for GB_mex_assign", pr)) ;
+    ASSERT_OK (GB_check (C, "C", 0)) ;
+    ASSERT_OK_OR_NULL (GB_check (Mask, "Mask", 0)) ;
+    ASSERT_OK (GB_check (A, "A", 0)) ;
+    ASSERT_OK_OR_NULL (GB_check (accum, "accum", 0)) ;
+    ASSERT_OK_OR_NULL (GB_check (desc, "desc", 0)) ;
 
     /*
     if (I == NULL)
@@ -113,32 +107,29 @@ GrB_Info assign ( )
     if (kind == 1)
     {
         // test GrB_Col_assign
-        ASSERT (GB_VECTOR_OK (A)) ;
-        ASSERT (Mask == NULL || GB_VECTOR_OK (Mask)) ;
         OK (GrB_assign (C, (GrB_Vector) Mask, accum, (GrB_Vector) A,
             I, ni, J [0], desc)) ;
     }
     else if (kind == 2)
     {
         // test GrB_Row_assign
-        ASSERT (GB_VECTOR_OK (A)) ;
-        ASSERT (Mask == NULL || GB_VECTOR_OK (Mask)) ;
-        ASSERT_OK_OR_NULL (GB_check ((GrB_Vector) Mask, "row mask", GB0)) ;
-        ASSERT_OK (GB_check ((GrB_Vector) A, "row u", GB0)) ;
+        ASSERT_OK_OR_NULL (GB_check ((GrB_Vector) Mask, "row mask", 0)) ;
+        ASSERT_OK (GB_check ((GrB_Vector) A, "row u", 0)) ;
 
         OK (GrB_assign (C, (GrB_Vector) Mask, accum, (GrB_Vector) A,
             I [0], J, nj, desc)) ;
     }
-    else if (GB_NROWS (A) == 1 && GB_NCOLS (A) == 1 && GB_NNZ (A) == 1)
+    else if (A->nrows == 1 && A->ncols == 1 && NNZ (A) == 1)
     {
         // scalar expansion to matrix or vector
         void *Ax = A->x ;
 
         if (ni == 1 && nj == 1 && Mask == NULL && I != GrB_ALL && J != GrB_ALL
-            && GB_op_is_second (accum, C->type) && A->type->code <= GB_FP64_code
+            && GB_op_is_second (accum, C->type) && A->type->code != GB_UDT_code
             && desc == NULL)
         {
             // test GrB_Matrix_setElement
+            // printf ("setElement\n") ;
             #define ASSIGN(type)                                        \
             {                                                           \
                 type x = ((type *) Ax) [0] ;                            \
@@ -158,7 +149,6 @@ GrB_Info assign ( )
                 case GB_UINT64_code : ASSIGN (uint64_t) ;
                 case GB_FP32_code   : ASSIGN (float) ;
                 case GB_FP64_code   : ASSIGN (double) ;
-                case GB_UCT_code    :
                 case GB_UDT_code    :
                 default:
                     FREE_ALL ;
@@ -166,13 +156,14 @@ GrB_Info assign ( )
             }
             #undef ASSIGN
 
-            ASSERT_OK (GB_check (C, "C after setElement", GB0)) ;
+            ASSERT_OK (GB_check (C, "C after setElement", 0)) ;
 
         }
-        if (GB_VECTOR_OK (C) && (Mask == NULL || GB_VECTOR_OK (Mask)))
+        if (C->ncols == 1)
         {
 
             // test GrB_Vector_assign_scalar functions
+            // printf ("scalar assign to vector\n") ;
             #define ASSIGN(type)                                        \
             {                                                           \
                 type x = ((type *) Ax) [0] ;                            \
@@ -193,7 +184,6 @@ GrB_Info assign ( )
                 case GB_UINT64_code : ASSIGN (uint64_t) ;
                 case GB_FP32_code   : ASSIGN (float) ;
                 case GB_FP64_code   : ASSIGN (double) ;
-                case GB_UCT_code    :
                 case GB_UDT_code    :
                 {
                     OK (GrB_assign ((GrB_Vector) C, (GrB_Vector) Mask,
@@ -211,6 +201,7 @@ GrB_Info assign ( )
         {
 
             // test Matrix_assign_scalar functions
+            // printf ("scalar assign to matrix\n") ;
             #define ASSIGN(type)                                            \
             {                                                               \
                 type x = ((type *) Ax) [0] ;                                \
@@ -230,7 +221,6 @@ GrB_Info assign ( )
                 case GB_UINT64_code : ASSIGN (uint64_t) ;
                 case GB_FP32_code   : ASSIGN (float) ;
                 case GB_FP64_code   : ASSIGN (double) ;
-                case GB_UCT_code    :
                 case GB_UDT_code    :
                 {
                     OK (GrB_assign (C, Mask, accum, Ax, I, ni, J, nj, desc)) ;
@@ -242,23 +232,23 @@ GrB_Info assign ( )
                     mexErrMsgTxt ("unsupported class") ;
             }
             #undef ASSIGN
+
         }
     }
-    else if (GB_VECTOR_OK (C) && GB_VECTOR_OK (A) &&
-        (Mask == NULL || GB_VECTOR_OK (Mask)) && !at)
+    else if (C->ncols == 1 && A->ncols == 1 &&
+        (Mask == NULL || Mask->ncols == 1) && !at)
     {
         // test GrB_Vector_assign
+        // printf ("vector assign\n") ;
         OK (GrB_assign ((GrB_Vector) C, (GrB_Vector) Mask, accum,
             (GrB_Vector) A, I, ni, desc)) ;
     }
     else
     {
         // standard submatrix assignment
+        // printf ("submatrix assign\n") ;
         OK (GrB_assign (C, Mask, accum, A, I, ni, J, nj, desc)) ;
     }
-
-    ASSERT_OK (GB_check (C, "Final C before wait", GB0)) ;
-    OK (GrB_wait ( )) ;
     return (info) ;
 }
 
@@ -304,7 +294,7 @@ GrB_Info many_assign
         if (fMask >= 0)
         {
             p = mxGetFieldByNumber (pargin [1], k, fMask) ;
-            Mask = GB_mx_mxArray_to_Matrix (p, "Mask", false, false) ;
+            Mask = GB_mx_mxArray_to_Matrix (p, "Mask", false) ;
             if (Mask == NULL && !mxIsEmpty (p))
             {
                 FREE_ALL ;
@@ -314,7 +304,7 @@ GrB_Info many_assign
 
         // get A (shallow copy)
         p = mxGetFieldByNumber (pargin [1], k, fA) ;
-        A = GB_mx_mxArray_to_Matrix (p, "A", false, true) ;
+        A = GB_mx_mxArray_to_Matrix (p, "A", false) ;
         if (A == NULL)
         {
             FREE_ALL ;
@@ -337,7 +327,7 @@ GrB_Info many_assign
 
         // get I
         p = mxGetFieldByNumber (pargin [1], k, fI) ;
-        if (!GB_mx_mxArray_to_indices (&I, p, &ni, I_range, &ignore))
+        if (!GB_mx_mxArray_to_indices (&I, p, &ni))
         {
             FREE_ALL ;
             mexErrMsgTxt ("I failed") ;
@@ -345,7 +335,7 @@ GrB_Info many_assign
 
         // get J
         p = mxGetFieldByNumber (pargin [1], k, fJ) ;
-        if (!GB_mx_mxArray_to_indices (&J, p, &nj, J_range, &ignore))
+        if (!GB_mx_mxArray_to_indices (&J, p, &nj))
         {
             FREE_ALL ;
             mexErrMsgTxt ("J failed") ;
@@ -394,9 +384,6 @@ GrB_Info many_assign
             return (info) ;
         }
     }
-
-    ASSERT_OK (GB_check (C, "Final C before wait", GB0)) ;
-    OK (GrB_wait ( )) ;
     return (info) ;
 }
 
@@ -417,18 +404,19 @@ void mexFunction
     // check inputs
     //--------------------------------------------------------------------------
 
-    malloc_debug = GB_mx_get_global (true) ;
+    malloc_debug = GB_mx_get_global ( ) ;
     A = NULL ;
     C = NULL ;
     Mask = NULL ;
     desc = NULL ;
 
-    // check inputs
-    GB_WHERE (USAGE) ;
+    // printf ("\n========================= GB_mex_assign:\n") ;
+
     if (nargout > 1 || !
         (nargin == 2 || nargin == 6 || nargin == 7 || nargin == 8))
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: C = GB_mex_assign "
+       "(C, Mask, accum, A, I, J, desc, kind) or (C, Work)");
     }
 
     //--------------------------------------------------------------------------
@@ -492,7 +480,7 @@ void mexFunction
         //----------------------------------------------------------------------
 
         // get Mask (shallow copy)
-        Mask = GB_mx_mxArray_to_Matrix (pargin [1], "Mask", false, false) ;
+        Mask = GB_mx_mxArray_to_Matrix (pargin [1], "Mask", false) ;
         if (Mask == NULL && !mxIsEmpty (pargin [1]))
         {
             FREE_ALL ;
@@ -500,7 +488,7 @@ void mexFunction
         }
 
         // get A (shallow copy)
-        A = GB_mx_mxArray_to_Matrix (pargin [3], "A", false, true) ;
+        A = GB_mx_mxArray_to_Matrix (pargin [3], "A", false) ;
         if (A == NULL)
         {
             FREE_ALL ;
@@ -517,14 +505,14 @@ void mexFunction
         }
 
         // get I
-        if (!GB_mx_mxArray_to_indices (&I, pargin [4], &ni, I_range, &ignore))
+        if (!GB_mx_mxArray_to_indices (&I, pargin [4], &ni))
         {
             FREE_ALL ;
             mexErrMsgTxt ("I failed") ;
         }
 
         // get J
-        if (!GB_mx_mxArray_to_indices (&J, pargin [5], &nj, J_range, &ignore))
+        if (!GB_mx_mxArray_to_indices (&J, pargin [5], &nj))
         {
             FREE_ALL ;
             mexErrMsgTxt ("J failed") ;
@@ -553,6 +541,8 @@ void mexFunction
     // return C to MATLAB as a struct
     //--------------------------------------------------------------------------
 
+    ASSERT_OK (GB_check (C, "Final C before wait", 0)) ;
+    GrB_wait ( ) ;
     pargout [0] = GB_mx_Matrix_to_mxArray (&C, "C assign result", true) ;
     FREE_ALL ;
 }

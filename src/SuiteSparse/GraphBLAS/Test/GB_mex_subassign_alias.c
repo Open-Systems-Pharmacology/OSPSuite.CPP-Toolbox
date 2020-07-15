@@ -9,13 +9,11 @@
 
 #include "GB_mex.h"
 
-#define USAGE "C = GB_mex_subassign_alias (C, accum, desc)"
-
 #define FREE_ALL                            \
 {                                           \
     GB_MATRIX_FREE (&C) ;                   \
     GrB_free (&desc) ;                      \
-    GB_mx_put_global (true, 0) ;        \
+    GB_mx_put_global (malloc_debug) ;       \
 }
 
 void mexFunction
@@ -27,20 +25,19 @@ void mexFunction
 )
 {
 
-    bool malloc_debug = GB_mx_get_global (true) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Matrix C = NULL ;
     GrB_Descriptor desc = NULL ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargout > 1 || nargin < 2 || nargin > 3)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: C = GB_mex_subassign_alias (C, accum, desc)");
     }
 
     // get C (make a deep copy)
     #define GET_DEEP_COPY \
-    C = GB_mx_mxArray_to_Matrix (pargin [0], "C input", true, true) ;
+    C = GB_mx_mxArray_to_Matrix (pargin [0], "C input", true) ;
     #define FREE_DEEP_COPY GB_MATRIX_FREE (&C) ;
     GET_DEEP_COPY ;
     if (C == NULL)
@@ -71,11 +68,7 @@ void mexFunction
     GrB_Matrix_nvals (&ncols, C) ;
 
     // C<C>(:,:) = accum (C(:,:),C)
-    METHOD (GxB_subassign (C, C, accum, C, GrB_ALL, nrows, GrB_ALL, ncols,
-        desc)) ;
-
-    GrB_wait ( ) ;
-    TOC ;
+    METHOD (GxB_subassign (C, C, accum, C, GrB_ALL, nrows, GrB_ALL, ncols, desc)) ;
 
     // return C to MATLAB as a struct and free the GraphBLAS C
     pargout [0] = GB_mx_Matrix_to_mxArray (&C, "C output", true) ;

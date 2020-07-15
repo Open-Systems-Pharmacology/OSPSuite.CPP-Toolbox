@@ -8,10 +8,7 @@
 //------------------------------------------------------------------------------
 
 #include "GB_mex.h"
-
-#define USAGE "A = GB_mex_wathen (nx, ny, method, scale, rho)"
-
-#define FREE_ALL GB_mx_put_global (true, 0) ;
+#define FREE_ALL GB_mx_put_global (malloc_debug) ;
 
 void mexFunction
 (
@@ -22,27 +19,26 @@ void mexFunction
 )
 {
 
-    bool malloc_debug = GB_mx_get_global (true) ;
+    bool malloc_debug = GB_mx_get_global ( ) ;
     GrB_Matrix A = NULL ;
 
     // check inputs
-    GB_WHERE (USAGE) ;
     if (nargout > 1 || nargin > 5)
     {
-        mexErrMsgTxt ("Usage: " USAGE) ;
+        mexErrMsgTxt ("Usage: A = GB_mex_wathen (nx, ny, method, scale, rho)") ;
     }
 
     // get nx
-    int64_t GET_SCALAR (0, int64_t, nx, 4) ;
+    GET_SCALAR (0, int64_t, nx, 4) ;
 
     // get ny
-    int64_t GET_SCALAR (1, int64_t, ny, 4) ;
+    GET_SCALAR (1, int64_t, ny, 4) ;
 
     // get method
-    int GET_SCALAR (2, int, method, 0) ;
+    GET_SCALAR (2, int, method, 0) ;
 
     // get scale
-    bool GET_SCALAR (3, bool, scale, false) ;
+    GET_SCALAR (3, bool, scale, false) ;
 
     // get rho
     double *rho = NULL ;

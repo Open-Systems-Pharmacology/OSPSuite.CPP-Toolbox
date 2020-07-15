@@ -9,9 +9,7 @@
  * Mongoose is also available under other licenses; contact authors for details.
  * -------------------------------------------------------------------------- */
 
-// #pragma once
-#ifndef MONGOOSE_GUESSCUT_HPP
-#define MONGOOSE_GUESSCUT_HPP
+#pragma once
 
 #include "Mongoose_BoundaryHeap.hpp"
 #include "Mongoose_CutCost.hpp"
@@ -25,5 +23,3 @@ namespace Mongoose
 bool guessCut(EdgeCutProblem *, const EdgeCut_Options *);
 
 } // end namespace Mongoose
-
-#endif

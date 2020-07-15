@@ -60,31 +60,19 @@ static bool get_descriptor
         GrB_Info info ;
         if (MATCH (s, "default"))
         {
-            info = GxB_set (D, field, GxB_DEFAULT) ;
+            info = GrB_Descriptor_set (D, field, GxB_DEFAULT) ;
         }
         else if (MATCH (s, "tran"))
         {
-            info = GxB_set (D, field, GrB_TRAN) ;
+            info = GrB_Descriptor_set (D, field, GrB_TRAN) ;
         }
         else if (MATCH (s, "scmp"))
         {
-            info = GxB_set (D, field, GrB_SCMP) ;
+            info = GrB_Descriptor_set (D, field, GrB_SCMP) ;
         }
         else if (MATCH (s, "replace"))
         {
-            info = GxB_set (D, field, GrB_REPLACE) ;
-        }
-        else if (MATCH (s, "gustavson"))
-        {
-            info = GxB_set (D, field, GxB_AxB_GUSTAVSON) ;
-        }
-        else if (MATCH (s, "dot"))
-        {
-            info = GxB_set (D, field, GxB_AxB_DOT) ;
-        }
-        else if (MATCH (s, "heap"))
-        {
-            info = GxB_set (D, field, GxB_AxB_HEAP) ;
+            info = GrB_Descriptor_set (D, field, GrB_REPLACE) ;
         }
         else
         {
@@ -134,8 +122,7 @@ bool GB_mx_mxArray_to_Descriptor   // true if successful, false otherwise
     if (!get_descriptor (D, D_matlab, "outp", GrB_OUTP) ||
         !get_descriptor (D, D_matlab, "inp0", GrB_INP0) ||
         !get_descriptor (D, D_matlab, "inp1", GrB_INP1) ||
-        !get_descriptor (D, D_matlab, "mask", GrB_MASK) ||
-        !get_descriptor (D, D_matlab, "axb",  GxB_AxB_METHOD))
+        !get_descriptor (D, D_matlab, "mask", GrB_MASK))
     {
         GrB_free (&D) ;
         mexWarnMsgIdAndTxt ("GB:warn", "descriptor failed") ;
@@ -143,7 +130,7 @@ bool GB_mx_mxArray_to_Descriptor   // true if successful, false otherwise
     }
 
     // return the non-null Descriptor to the caller
-    ASSERT_OK (GB_check (D, name, GB0)) ;
+    ASSERT_OK (GB_check (D, name, 0)) ;
     (*handle) = D ;
     return (true) ;
 }
