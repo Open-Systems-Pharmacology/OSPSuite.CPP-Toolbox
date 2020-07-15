@@ -15,31 +15,16 @@
     <tags>open-systems-pharmacology</tags>
   </metadata>
   <files>
-    <file src="..\..\Build\Release\x64\libOSPSuite.CPP-Toolbox.so" target="OSPSuite.CPP-Toolbox\bin\native\x64\Release" />
-    <file src="..\..\Build\Release\x64\libOSPSuite.CPP-Toolbox.mexa64" target="OSPSuite.CPP-Toolbox\bin\native\x64\Release" />
-
-    <file src="..\..\Build\Debug\x64\libOSPSuite.CPP-Toolbox.so" target="OSPSuite.CPP-Toolbox\bin\native\x64\Debug" />
-    <file src="..\..\Build\Debug\x64\libOSPSuite.CPP-Toolbox.mexa64" target="OSPSuite.CPP-Toolbox\bin\native\x64\Debug" />
+    <file src="..\..\Build\Release\x64\cppToolbox.mexa64" target="OSPSuite.CPP-Toolbox\bin\native\x64\Release" />
+    <file src="..\..\Build\Debug\x64\cppToolbox.mexa64" target="OSPSuite.CPP-Toolbox\bin\native\x64\Debug" />
 
 
     <file src="..\OSPSuite.CPP-Toolbox\include\**\*.h" target="OSPSuite.CPP-Toolbox\include" />
     <file src="..\OSPSuite.CPP-Toolbox\src\**\*.*" target="OSPSuite.CPP-Toolbox\src" />
     <file src="..\OSPSuite.CPP-Toolbox\*.*" target="OSPSuite.CPP-Toolbox" exclude="..\OSPSuite.CPP-Toolbox\*.vcxproj*" />
 
-    <file src="..\SuiteSparse\include\**\*.h" target="SuiteSparse\include" />
-    <file src="..\SuiteSparse\AMD\Include\**\*.h" target="SuiteSparse\include\AMD" />
-    <file src="..\SuiteSparse\BTF\Include\**\*.h" target="SuiteSparse\include\BTF" />
-    <file src="..\SuiteSparse\COLAMD\Include\**\*.h" target="SuiteSparse\include\COLAMD" />
-    <file src="..\SuiteSparse\KLU\Include\**\*.h" target="SuiteSparse\include\KLU" />
-    <file src="..\SuiteSparse\SuiteSparse_config\**\*.h" target="SuiteSparse\include\SuiteSparse_config" />
-
-    <file src="..\SuiteSparse\AMD\Lib\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
-    <file src="..\SuiteSparse\BTF\Lib\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
-    <file src="..\SuiteSparse\COLAMD\Lib\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
-    <file src="..\SuiteSparse\KLU\Lib\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
-    <file src="..\SuiteSparse\SuiteSparse_config\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
-
-    <file src="..\SuiteSparse\lib\*.so" target="SuiteSparse\bin\native\x64\Release\shared" />
+    <file src="..\..\BuildSuiteSparse\include\*.h" target="SuiteSparse\include" />
+    <file src="..\..\BuildSuiteSparse\lib64\*.a" target="SuiteSparse\bin\native\x64\Release\static" />
 	
 	<file src="..\Sundials\include\**\*.h" target="Sundials\include" />
 	<file src="..\..\BuildSundials\Release\x64\include\sundials\*.h" target="Sundials\include\sundials" />
