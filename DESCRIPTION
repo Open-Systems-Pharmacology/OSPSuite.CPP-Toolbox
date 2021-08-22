@@ -1,0 +1,21 @@
+Package: ospsuiteCpp
+Type: Package
+Title: R package to compile OSPSuite Models
+Version: 10.0.0
+Date: 2021-08-20
+Author: @R: 
+    c(person(given = "Open-Systems-Pharmacology Community",
+             role = "cph"),
+      person(given = "Holger",
+             family = "Diedam",
+             role = c("aut", "cre"),
+             email = "holger.diedam@bayer.com"))
+Description: A package that extends the open systems pharmacology R interface "ospsuite" by
+             allowing to export models to C++ compile them and run them.
+License: GPL-2 | file 
+URL: https://github.com/Open-Systems-Pharmacology/OSPSuite.CPP-Toolbox
+BugReports: https://github.com/Open-Systems-Pharmacology/OSPSuite.CPP-Toolbox/issues
+Imports: Rcpp (>= 1.0.7),
+         R6
+Depends: ospsuite
+LinkingTo: Rcpp

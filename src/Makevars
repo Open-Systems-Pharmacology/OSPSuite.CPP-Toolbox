@@ -1,0 +1,28 @@
+# use CVODES from ospsuite
+RSCRIPT = $(R_HOME)/bin$(R_ARCH_BIN)/Rscript
+OSPSUITE_PATH=`${RSCRIPT} -e 'cat(system.file("lib", package = "ospsuite"))'`
+CPPTOOLBOX_PATH=./OSPSuite.CPP-Toolbox
+PKG_LIBS = -L${OSPSUITE_PATH} -lOSPSuite.SimModelSolver_CVODES
+
+CXX_STD = CXX11
+PKG_CPPFLAGS = -I${CPPTOOLBOX_PATH}/include -I./Sundials/include #-I./includeCVODES
+
+# RcppExports is automatically created by Rcpp and has to be included
+SOURCES = RcppExports.cpp\
+	InterfaceR.cpp\
+	${CPPTOOLBOX_PATH}/src/Integrator.cpp\
+	${CPPTOOLBOX_PATH}/src/Interface.cpp\
+	${CPPTOOLBOX_PATH}/src/ThreadPool.cpp
+#	${CPPTOOLBOX_PATH}/src/Model.cpp
+OBJECTS = $(SOURCES:.cpp=.o)
+
+all: $(SHLIB) cpHeadersToInst
+
+cpHeadersToInst:
+	echo ${SOURCES}
+	echo ${OBJECTS}
+	cp ${CPPTOOLBOX_PATH}/include/Model.h ../inst/include/
+	cp ${CPPTOOLBOX_PATH}/include/ModelDerived.h ../inst/include/
+	cp ${CPPTOOLBOX_PATH}/src/Model.cpp ../inst/include/
+
+.Phony: all
