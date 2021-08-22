@@ -5,7 +5,7 @@ CPPTOOLBOX_PATH=./OSPSuite.CPP-Toolbox
 PKG_LIBS = -L${OSPSUITE_PATH} -lOSPSuite.SimModelSolver_CVODES
 
 CXX_STD = CXX11
-PKG_CPPFLAGS = -I${CPPTOOLBOX_PATH}/include -I./Sundials/include #-I./includeCVODES
+PKG_CPPFLAGS = -I${CPPTOOLBOX_PATH}/include -I./OSPSuite.SimModel.Solver.CVODES/src/CVODES/include
 
 # RcppExports is automatically created by Rcpp and has to be included
 SOURCES = RcppExports.cpp\

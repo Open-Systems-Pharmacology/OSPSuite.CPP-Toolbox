@@ -19,15 +19,25 @@ knitr::opts_chunk$set(
 This package
 
 ```{r exportSimulation}
-library(ospsuite)
+library(ospsuiteCpp)
 # Load simulation
 simFilePath <- system.file("extdata", "Aciclovir.pkml", package = "ospsuite")
 sim <- loadSimulation(simFilePath)
 par <- c("Aciclovir|Lipophilicity",
          "Aciclovir|Fraction unbound (plasma)")
-
+# select free parameter, export and compile
 opt = SimulationBatchOptions$new(variableParameters = par, variableMolecules = NULL)
-exportSimulationCpp(sim, opt, outputName = "Aciclovir")
+cppFile = exportSimulationCpp(sim, opt, outputName = "Aciclovir")
+dllFile = compileSimulationCpp(cppFile)
+
+# initialize simulation, run once with the default paramter, change time grid and parameter and run again
+sim = SimulationCompiled$new('Aciclovir')
+parameter = sim$getP()
+res1 = sim$run(parameter)
+tgrid = sim$getT()
+sim$setT(c(tgrid, tgrid[length(tgrid)]+1.0))
+parameter[1] = parameter[1] + 0.1
+res2 = sim$run(parameter)
 
 ```
 The value `-1` for the sensitivity of "AUC_inf" of the output `Organism|PeripheralVenousBlood|Aciclovir|Plasma (Peripheral Venous Blood)` for the parameter `Organism-Kidney-Volume` means that increasing `Organism-Kidney-Volume` by 10% will decrease "AUC_inf" by 10%.

@@ -318,6 +318,7 @@ int SimInterface::InitializeCVODE() {
             break;
 #endif
         default:
+            printfPtr("[ERROR] Unknown jacobian type.");
             return -1; // unknown type
     }
 
@@ -711,11 +712,16 @@ bool SimInterface::loadModelLibrary(const std::string &nameLib) {
     }
     else {
 		// only a single call to GETLIBRARYERROR as it returns the last error only once
+#ifdef _WIN32
+		DWORD e = GETLIBRARYERROR;
+		SimInterface::printfPtr("[ERROR] Failed to load library (Error: %lu).\n", e);
+#else
 		char* e = GETLIBRARYERROR;
 		if (e!=nullptr)
 			SimInterface::printfPtr("[ERROR] Failed to load library (Error: %s).\n", e);
 		else
 			SimInterface::printfPtr("[ERROR] Failed to load library (unknown error).\n");
+#endif
         return false;
     }
     return true;
