@@ -16,7 +16,7 @@ dotnet_csproj:
 
 build_script:
   # Windows
-  - cmd: "C:\Program Files\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+  - cmd: call "C:\Program Files\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
   - cmd: buildWindows.bat $app_version
   # Linux
   - sh: chmod ugo+x buildLinux.sh
