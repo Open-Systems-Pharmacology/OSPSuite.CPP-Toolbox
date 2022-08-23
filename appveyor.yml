@@ -1,5 +1,6 @@
 image: 
 - Ubuntu1804
+- Visual Studio 2019
 
 environment:
   major: 1
@@ -14,6 +15,9 @@ dotnet_csproj:
   informational_version: '$(app_version)'
 
 build_script:
+  # Windows
+  - cmd: buildWindows.bat $app_version
+  # Linux
   - sh: chmod ugo+x buildLinux.sh
   - sh: ./buildLinux.sh Ubuntu18 $app_version
 
