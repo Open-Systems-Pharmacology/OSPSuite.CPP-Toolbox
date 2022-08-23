@@ -7,6 +7,7 @@ mkdir BuildSuiteSparse\include
 mkdir BuildSuiteSparse\lib64
 
 cd src\SuiteSparse\SuiteSparse_config\
+path
 make static
 rem cp -p *.a ..\..\..\BuildSuiteSparse\lib64
 rem cp -p SuiteSparse_config.h ..\..\..\BuildSuiteSparse\include\
