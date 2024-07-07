@@ -1,34 +1,31 @@
 image: 
-- Ubuntu1804
+- Visual Studio 2022
+- Ubuntu2204
 
 environment:
-  major: 1
+  major: 2
   minor: 0
-  app_version: '$(major).$(minor).$(APPVEYOR_BUILD_NUMBER)'
+  release: 0
+  app_version: "$(major).$(minor).$(release).$(APPVEYOR_BUILD_NUMBER)"
 
-dotnet_csproj:
-  patch: true
-  file: '**\*.csproj'
-  assembly_version: '$(app_version)'
-  file_version: '$(app_version)'
-  informational_version: '$(app_version)'
-
-build_script:
-  - sh: chmod ugo+x buildLinux.sh
-  - sh: ./buildLinux.sh Ubuntu18 $app_version
-
-cache:
-  - packages -> **\packages.config  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
+version: "$(major).$(minor).$(release).{build}"
 
 before_build:
-  - git submodule update --init --recursive
+  - cmd: restorePackages.bat
+  - sh: chmod ugo+x restorePackages.sh
+  - sh: ./restorePackages.sh
 
-branches:
-  only:
-    - master
+build_script:
+  - cmd: build_Windows.bat
+  - sh: chmod ugo+x build_Linux.sh
+  - sh: ./build_Linux.sh
 
-pull_requests:
-  do_not_increment_build_number: true
+
+after_build:
+  - cmd: createNugetPackage_Windows.bat %app_version%
+  - sh: chmod ugo+x createNugetPackage_Linux.sh
+  - sh: ./createNugetPackage_Linux.sh $app_version
+  - ps: Get-ChildItem .\OSPSuite.CPP-Toolbox*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
 
 skip_tags: true
 
@@ -36,9 +33,8 @@ skip_commits:
   files:
     - "*.md"
 
-after_build:
-#  - cmd: nuget pack src\OSPSuite.CPP-Toolbox\OSPSuite.CPP-Toolbox.nuspec -version %app_version%
-#  - sh: nuget pack src/OSPSuite.CPP-Toolbox/OSPSuite.CPP-Toolbox_Ubuntu18.nuspec -version $app_version
-  - ps: Get-ChildItem .\OSPSuite.CPP-Toolbox*.nupkg | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+pull_requests:
+  do_not_increment_build_number: true
 
-
+nuget:
+  disable_publish_on_pr: true

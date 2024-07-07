@@ -711,7 +711,15 @@ bool SimInterface::loadModelLibrary(const std::string &nameLib) {
     }
     else {
 		// only a single call to GETLIBRARYERROR as it returns the last error only once
-		char* e = GETLIBRARYERROR;
+		char* e = NULL;
+#ifdef _WIN32
+      ::FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+         NULL, GetLastError(),
+         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+         (LPTSTR)&e, 0, NULL);
+#else
+      e = GETLIBRARYERROR;
+#endif
 		if (e!=nullptr)
 			SimInterface::printfPtr("[ERROR] Failed to load library (Error: %s).\n", e);
 		else

@@ -9,7 +9,7 @@
 #define SRC_THREADPOOL_H_
 
 #if __cplusplus < 201103L
-#warning C++11 support not available, disabling threads
+//#warning C++11 support not available, disabling threads
 #else
 
 #include <vector>
