@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>    
+    <description>Calculation engine for compiled models built with PK-Sim® or MoBi®</description>
+    <id>OSPSuite.CPP-Toolbox.Ubuntu22</id>
+    <version>$version$</version>
+    <title>OSPSuite.CPP-Toolbox</title>
+    <authors>Open-Systems-Pharmacology</authors>
+    <owners>Open-Systems-Pharmacology</owners>
+    <projectUrl>https://github.com/Open-Systems-Pharmacology/OSPSuite.CPP-Toolbox</projectUrl>
+    <licenseUrl>https://github.com/Open-Systems-Pharmacology/OSPSuite.CPP-Toolbox/blob/master/LICENSE</licenseUrl>
+    <iconUrl>https://raw.githubusercontent.com/Open-Systems-Pharmacology/Suite/master/logo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <copyright>Copyright © 2002-2024 - Open Systems Pharmacology Community</copyright>
+    <tags>open-systems-pharmacology</tags>
+  </metadata>
+  <files>
+    <file src="src/OSPSuite.CPP-Toolbox/include/**/*.h" target="OSPSuite.CPP-Toolbox/include" />
+
+	<file src="Dist/Linux/Release/x64/*.*" target="OSPSuite.CPP-Toolbox/bin/native/x64/Release" />
+	<file src="Dist/Linux/Debug/x64/*.*" target="OSPSuite.CPP-Toolbox/bin/native/x64/Debug" />
+    
+  </files>
+</package>

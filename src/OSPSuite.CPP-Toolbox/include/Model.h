@@ -60,7 +60,7 @@ struct Model {
 
     std::set<double> (*explicitSwitches)(const double*);
 
-    virtual void ODEOptions(double &absTol, double &relTol, double &hInit, double &hMin, double &hMax, long int &maxSteps, bool &useJac, const double *__restrict__ P) = 0;
+    virtual void ODEOptions(double &absTol, double &relTol, double &hInit, double &hMin, double &hMax, long int &maxSteps, bool &useJac, const double * P) = 0;
     virtual void ODEInitialValues(double *y, double *P, unsigned int *S) = 0;
     virtual void ODEInitialParameters(double *P) = 0;
     virtual void ODERHSFunction(const double Time, const double *y, const double *P, const unsigned int *S, double *dy) = 0;
