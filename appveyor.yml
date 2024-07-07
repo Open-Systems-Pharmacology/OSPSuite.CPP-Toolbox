@@ -10,6 +10,11 @@ environment:
 
 version: "$(major).$(minor).$(release).{build}"
 
+before_build:
+  - cmd: restorePackages.bat
+  - sh: chmod ugo+x restorePackages.sh
+  - sh: ./restorePackages.sh
+
 build_script:
   - cmd: build_Windows.bat
   - sh: chmod ugo+x build_Linux.sh
